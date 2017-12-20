@@ -124,7 +124,7 @@ $map = "";
 
 // Statistics
 // Number of flights, total distance (mi), total duration (minutes), public/open
-$sql = "SELECT COUNT(*) AS count, SUM(distance) AS distance, SUM(TIME_TO_SEC(duration))/60 AS duration FROM flights AS f WHERE uid=" . $uid . " " . $filter;
+$sql = "SELECT COUNT(*) AS count, SUM(distance) AS distance, SUM(TIME_TO_SEC(duration))/60 AS duration FROM flights AS f WHERE mode='F' AND uid=" . $uid . " " . $filter;
 $result = mysql_query($sql, $db) or die ('Error;Database error ' . $sql . ', ' . mysql_error());
 if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
   if($row["count"] == "0" && $user && $user != "0") {

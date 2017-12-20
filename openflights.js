@@ -1283,7 +1283,7 @@ function updateMap(str, url){
     var min = Math.floor(col[2] % 60);
     if(min < 10) min = "0" + min;
 
-    stats = col[0] + " " + gt.gettext("segments") + "<br>" +
+    stats = col[0] + " " + gt.gettext("air segments") + "<br>" +
       distance + "<br>" +
       days + " " + gt.gettext("days") + " " + hours + ":" + min;
     $("stats_ajax").style.display = 'none';
