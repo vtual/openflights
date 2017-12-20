@@ -1,4 +1,5 @@
 composer.phar
 php/config.php
 vendor/*
-
+openflights.sublime-project
+openflights.sublime-workspace

@@ -89,7 +89,7 @@ require_once("./php/helper.php");
 		    <td></td>
 		    <td>
 		      <input id="loginbutton" type="button" value="<?php echo _("Log in") ?>" align="middle" tabindex="3" onclick='JavaScript:xmlhttpPost("/php/login.php")'>
-		      <a href="/html/settings?new=yes"><h7><?php echo _("Sign up") ?></a></h7>
+		      <a href="/html/settings.php?new=yes"><h7><?php echo _("Sign up") ?></a></h7>
 		    </td>
 		  </tr></table>
 	      </form>
@@ -153,7 +153,6 @@ require_once("./php/helper.php");
 
 	<div id="resultbox">
 	  <div id="ad" style="display: inline;">
-	    <?php include("./html/ad.html") ?>
 	  </div>
 
 	  <div id="help" style="display: none;">

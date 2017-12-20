@@ -674,7 +674,7 @@ function xmlhttpPost(strURL, id, param) {
       if(strURL == URL_MAP || strURL == URL_ROUTES) {
 	var str = self.xmlHttpReq.responseText;
   if(str.substring(0,6) == "Signup") {
-    window.location = "/html/settings?new=yes&vbulletin=true"
+    window.location = "/html/settings.php?new=yes&vbulletin=true"
   }
 	if(str.substring(0,5) == "Error") {
 	  $("result").innerHTML = "<h4>" + str.split(';')[1] + "</h4><br><h6><a href='/'>Home</a></h6>";
@@ -2000,7 +2000,7 @@ function changeMode(mode) {
 // Handle the "add new airports" buttons
 function popNewAirport(type, apid) {
   if(! apid) apid = 0;
-  url = '/html/apsearch';
+  url = '/html/apsearch.php';
   if(type) {
     input_toggle = type;
     apid = getApid(type);
@@ -2030,7 +2030,7 @@ function popNewAirline(type, name, mode) {
   if(type) {
     input_al_toggle = type;
   }
-  url = '/html/alsearch';
+  url = '/html/alsearch.php';
   if(name) {
     url += "?name=" + encodeURIComponent(name) + "&mode=" + mode;
   }
@@ -2126,7 +2126,7 @@ function goQuickSearch() {
 // thisTrip can be "ADD" (new), "EDIT" (edit selected), or a numeric trip id (edit this)
 //
 function editTrip(thisTrip) {
-  var url = '/html/trip';
+  var url = '/html/trip.php';
   var trid = 0;
   if(thisTrip == "ADD") {
     // do nothing, we'll create a new trip
@@ -2827,14 +2827,14 @@ function help(context) {
 // Import flights
 //
 function openImport() {
-  window.open('/html/import', 'Import', 'width=900,height=600,scrollbars=yes');
+  window.open('/html/import.php', 'Import', 'width=900,height=600,scrollbars=yes');
 }
 
 //
 // Change settings
 //
 function settings() {
-  location.href = '/html/settings';
+  location.href = '/html/settings.php';
 }
 
 //
