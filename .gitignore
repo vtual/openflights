@@ -3,3 +3,4 @@ php/config.php
 vendor/*
 openflights.sublime-project
 openflights.sublime-workspace
+sftp-config.json
