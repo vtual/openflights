@@ -1,5 +1,5 @@
 <?php
-require_once '../vendor/autoload.php';
+//require_once '../vendor/autoload.php';
 require_once '../php/locale.php';
 require_once '../php/db.php';
 require_once '../php/helper.php';
