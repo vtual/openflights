@@ -33,6 +33,7 @@ var multiinput_ids = [ "src_ap1id", "src_ap2id", "src_ap3id", "src_ap4id",
 var multiinput_rows = 1;
 
 var URL_FLIGHTS = "/php/flights.php";
+var URL_HITS = "/php/flights.php?hits";
 var URL_GETCODE = "/php/autocomplete.php";
 var URL_LOGIN = "/php/login.php";
 var URL_LOGOUT = "/php/logout.php";
@@ -576,7 +577,7 @@ function xmlhttpPost(strURL, id, param) {
 	return;
       }
 
-      if(strURL == URL_FLIGHTS) {
+      if(strURL == URL_FLIGHTS || strURL == URL_HITS) {
 	switch(param) {
 	  case "COPY":
 	  case "EDIT":
@@ -946,6 +947,7 @@ function xmlhttpPost(strURL, id, param) {
     break;
 
   case URL_FLIGHTS:
+  case URL_HITS:
     if(param == "RELOAD") {
       query = lastQuery;
       break;
@@ -979,7 +981,7 @@ function xmlhttpPost(strURL, id, param) {
     if(strURL == URL_ROUTES) {
       query += '&apid=' + encodeURIComponent(id);
     }
-    if(strURL == URL_FLIGHTS) {
+    if(strURL == URL_FLIGHTS || strURL == URL_HITS) {
       switch(param) {
       case "EDIT":
       case "COPY":
@@ -1407,6 +1409,10 @@ function updateMap(str, url){
 
 function startListFlights() {
   xmlhttpPost(URL_FLIGHTS, 0, "MAP");
+}
+
+function startListHits() {
+  xmlhttpPost(URL_HITS, 0, "MAP");
 }
 
 function listFlights(str, desc, id) {

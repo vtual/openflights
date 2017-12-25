@@ -141,6 +141,7 @@ require_once("./php/helper.php");
   		<br><b><?php echo _("Control panel") ?></b><br>
 	 	<input type="button" value="<?php echo _("New flight") ?>" align="middle" onclick='JavaScript:newFlight()'>
 		<input type="button" value="<?php echo _("List flights") ?>" align="middle" onclick='JavaScript:startListFlights()'>
+		<input type="button" value="<?php echo _("List hits") ?>" align="middle" onclick='JavaScript:startListHits()'>
 		<input type="button" value="<?php echo _("Import") ?>" align="middle" onclick='JavaScript:openImport()'>
 		<input type="button" value="<?php echo _("Settings") ?>" align="middle" onclick='JavaScript:settings()'>
 		<input type="button" value="<?php echo _("Logout") ?>" align="middle" onclick='JavaScript:xmlhttpPost("/php/logout.php")'>
