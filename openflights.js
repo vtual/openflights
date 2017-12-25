@@ -1566,6 +1566,13 @@ function showStats(str) {
     table += "<tr><td>" + gt.gettext("Vehicles") + "</td><td>" + uniques["num_planes"] + "</td></tr>";
     table += "<tr><td>&nbsp;</td></tr>";
 
+    table += "<tr><th colspan=2>" + gt.gettext("Hits") + "</th></tr>";
+    if (uniques["hits_double"] > 0) {table += "<tr><td>" + gt.gettext("Double") + "</td><td>" + uniques["hits_double"] + "</td></tr>";}
+    if (uniques["hits_triple"] > 0) {table += "<tr><td>" + gt.gettext("Triple") + "</td><td>" + uniques["hits_triple"] + "</td></tr>";}
+    if (uniques["hits_quadruple"] > 0) {table += "<tr><td>" + gt.gettext("Quadruple") + "</td><td>" + uniques["hits_quadruple"] + "</td></tr>";}
+    if (uniques["hits_quintuple_more"] > 0) {table += "<tr><td>" + gt.gettext("Quintuple or more") + "</td><td>" + uniques["hits_quintuple_more"] + "</td></tr>";}
+    table += "<tr><td>&nbsp;</td></tr>";
+
     var distance = parseInt(uniques["distance"]);
     table += "<tr><th colspan=2>" + gt.gettext("Distance") + "</th></tr>";
     table += "<tr><td>" + gt.gettext("Total flown") + "</td><td>" + uniques["localedist"] + "</td></tr>";

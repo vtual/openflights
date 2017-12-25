@@ -71,6 +71,31 @@ if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
   $array += $row;
 }
 
+// hits
+$sql = "SELECT count(hits) as hits_double from (select COUNT(*) as hits from flights f WHERE $filter AND registration != '' GROUP BY registration having COUNT(*) = 2) hits";
+$result = mysql_query($sql, $db);
+if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+  $array += $row;
+}
+
+$sql = "SELECT count(hits) as hits_triple from (select COUNT(*) as hits from flights f WHERE $filter AND registration != '' GROUP BY registration having COUNT(*) = 3) hits";
+$result = mysql_query($sql, $db);
+if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+  $array += $row;
+}
+
+$sql = "SELECT count(hits) as hits_quadruple from (select COUNT(*) as hits from flights f WHERE $filter AND registration != '' GROUP BY registration having COUNT(*) = 4) hits";
+$result = mysql_query($sql, $db);
+if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+  $array += $row;
+}
+
+$sql = "SELECT count(hits) as hits_quintuple_more from (select COUNT(*) as hits from flights f WHERE $filter AND registration != '' GROUP BY registration having COUNT(*) >= 5) hits";
+$result = mysql_query($sql, $db);
+if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+  $array += $row;
+}
+
 // unique airlines, unique planes, total distance (mi), average distance (localized), average duration
 $sql = "SELECT COUNT(DISTINCT alid) AS num_airlines, COUNT(DISTINCT plid) AS num_planes, SUM(distance) AS distance, ROUND(AVG(distance) $multiplier) AS avg_distance, TIME_FORMAT(SEC_TO_TIME(SUM(TIME_TO_SEC(duration))/COUNT(duration)), '%H:%i') AS avg_duration FROM flights AS f WHERE " . $filter;
 $result = mysql_query($sql, $db);
