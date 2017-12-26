@@ -56,20 +56,6 @@ if($action == "RECORD") {
     }
   }
 
-  // IATA duplicates allowed only for non-active airlines
-  if($iata != "") {
-    $sql = "SELECT * FROM airlines WHERE iata='" . mysql_real_escape_string($iata) . "' AND active='Y'";
-    // Editing an existing entry, so make sure we're not overwriting something else
-    if($alid && $alid != "") {
-      $sql .= " AND alid != " . mysql_real_escape_string($alid);
-    }
-    $result = mysql_query($sql, $db) or die('0;Duplicate check failed ' . $sql);
-    if($row = mysql_fetch_array($result, MYSQL_NUM)) {
-      printf("0;An airline using the IATA code " . $iata . " exists already.");
-      exit;
-    }
-  }
-
   // ICAO duplicates are not
   if($icao != "") {
     $sql = "SELECT * FROM airlines WHERE icao='" . mysql_real_escape_string($icao) . "'";
