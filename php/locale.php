@@ -9,7 +9,7 @@ if($OF_USE_LOCALES) {
   } else {
     $locale = $_SESSION["locale"];
     if(!$locale or empty($locale)) {
-      $locale = "en_US";
+      $locale = "en_GB";
     }
   }
   $locale .= ".utf8";
@@ -24,7 +24,7 @@ if($OF_USE_LOCALES) {
   textdomain("messages");
   header("Content-type: text/html; charset=utf-8");
 } else {
-  $locale = "en_US.utf8";
+  $locale = "en_GB.utf8";
 
   function _($string) {
     return $string;
@@ -48,7 +48,7 @@ function locale_pulldown($db, $locale) {
       printf("<option value='%s' %s>%s (%s)</option>\n", $row["locale"], $selected, $row["name"], substr($row["locale"], 0, 2));
     }
   } else {
-    echo "<option value='en_US' SELECTED>English</option>\n";
+    echo "<option value='en_GB' SELECTED>English (UK)</option>\n";
   }
   echo "</select>";
 }
