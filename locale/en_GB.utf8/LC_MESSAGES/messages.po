@@ -1,0 +1,6 @@
+msgid "Hello world"
+msgstr "Hello world"
+
+msgid "Analyze"
+msgstr "Analyse"
+

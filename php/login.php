@@ -33,7 +33,7 @@ if($name) {
     $_SESSION['editor'] = $myrow["editor"];
     $_SESSION['elite'] = $myrow["elite"];
     $_SESSION['units'] = $myrow["units"];
-    if($myrow["locale"] != "en_US" && $_SESSION['locale'] != $myrow["locale"]) {
+    if($myrow["locale"] != "en_GB" && $_SESSION['locale'] != $myrow["locale"]) {
       $myrow['status'] = 2; // force reload, so UI is changed into user's language
     } else {
       $myrow['status'] = 1;
