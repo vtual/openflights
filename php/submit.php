@@ -85,12 +85,12 @@ switch ($param) {
     $sql = <<<QUERY
 INSERT INTO flights(
   uid, src_apid, src_date, src_time, dst_apid, duration, distance, registration,
-  code, seat, seat_type, class, reason, note, plid, alid,
+  code, seat, seat_type, class, reason, note, plid, alid, alid_mkt
   trid, opp, mode,
   upd_time)
 VALUES(
   ?, ?, ?, ?, ?, ?, ?, ?,
-  ?, ?, ?, ?, ?, ?, ?, ?,
+  ?, ?, ?, ?, ?, ?, ?, ?, ?,
   ?, ?, ?,
   NOW())
 QUERY;
@@ -102,7 +102,8 @@ QUERY;
       $alid = trim($_POST["alid" . $idx]);
       if ($alid == 0)
         $alid = -1; // this should not be necessary, but just in case...
-
+      $alid_mkt = trim($_POST["alid_mkt" . $idx]);
+      
       // If either the distance or duration is missing, try to calculate it by airports.
       if (!$_POST["duration"] || !$_POST["distance"]) {
         list($calc_distance, $calc_duration) = gcDistance($dbh, $src_apid, $dst_apid);
@@ -121,7 +122,7 @@ QUERY;
       }
       $success = $sth->execute(array(
         $uid, $src_apid, $src_date, $src_time, $dst_apid, $duration, $distance, $registration,
-        $number, $seat, $seat_type, $class, $reason, $note, $plid, $alid,
+        $number, $seat, $seat_type, $class, $reason, $note, $plid, $alid, $alid_mkt,
         $trid, $opp, $mode));
       if(!$success) {
         # PDO will print a warning with the error.
@@ -137,6 +138,8 @@ QUERY;
     $src_apid = $_POST["src_apid"];
     $dst_apid = $_POST["dst_apid"];
     $alid = trim($_POST["alid"]); // IE adds some whitespace crud to this!?
+    $alid_mkt = trim($_POST["alid_mkt"]); 
+    
     if ($alid == 0)
       $alid = -1; // this should not be necessary, but just in case...
     list($src_apid, $dst_apid, $opp) = orderAirports($src_apid, $dst_apid);
@@ -145,7 +148,7 @@ QUERY;
 UPDATE flights
 SET src_apid=?, src_date=?, src_time=?, dst_apid=?, duration=?, distance=?,
     registration=?, code=?, seat=?, seat_type=?, class=?, reason=?,
-    note=?, plid=?, alid=?, trid=?, opp=?, mode=?,
+    note=?, plid=?, alid=?, alid_mkt=?, trid=?, opp=?, mode=?,
     upd_time=NOW()
 WHERE fid=? AND uid=?
 QUERY;
@@ -153,7 +156,7 @@ QUERY;
     $success = $sth->execute(array(
       $src_apid, $src_date, $src_time, $dst_apid, $duration, $distance,
       $registration, $number, $seat, $seat_type, $class, $reason, $note,
-      $plid, $alid, $trid, $opp, $mode,
+      $plid, $alid, $alid_mkt, $trid, $opp, $mode,
 
       $fid, $uid
     ));
