@@ -101,6 +101,7 @@ function init(){
   modesegments = { "F":gt.gettext("flight"), "T":gt.gettext("train"), "R":gt.gettext("road trip"), "S":gt.gettext("ship") };
   modeoperators = { "F":gt.gettext("airline"), "T":gt.gettext("railway"), "R":gt.gettext("road transport"), "S":gt.gettext("shipping") };
   topmodes = { "F":gt.gettext("Segments"), "D":gt.gettext("Mileage") };
+  carriergroups = { "M":gt.gettext("Marketing"), "O":gt.gettext("Operating") };
 
   var projectionName = "EPSG:4326";  // spherical Mercator
   proj = new OpenLayers.Projection(projectionName);
@@ -1759,6 +1760,8 @@ function showTop10(str) {
     table += createSelectFromArray('limit', toplimits, "updateTop10()", limit) + "<br>";
     table += gt.gettext("Sort by...") + "<br>";
     table += createSelectFromArray('mode', topmodes, "updateTop10()", mode) + "<br>";
+    table += gt.gettext("Carriers...") + "<br>";
+    table += createSelectFromArray('carriergroup', carriergroups, "updateTop10()", carriergroup) + "<br>";
     bigtable += table + "</form></td>";
 
     bigtable += "<td style='vertical-align: top; background-color: #ddd; padding: 0px 10px'>";
@@ -1828,11 +1831,13 @@ function updateTop10() {
   if(form) {
     mode = form.mode[form.mode.selectedIndex].value;
     limit = form.limit[form.limit.selectedIndex].value;
+    carriergroup = form.carriergroup[form.carriergroup.selectedIndex].value;
   } else {
     mode = "F";
     limit = "10";
+    carriergroup = "M";
   }
-  xmlhttpPost(URL_TOP10, 0, "mode=" + mode + "&limit=" + limit);
+  xmlhttpPost(URL_TOP10, 0, "mode=" + mode + "&carriergroup=" + carriergroup + "&limit=" + limit);
 }
 
 // Move "pointer" in flight list up or down one when user clicks prev, next
