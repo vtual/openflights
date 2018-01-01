@@ -28,7 +28,7 @@ switch($mode) {
 }
 
 $carriergroup = $_POST["carriergroup"];
-if ($carriergroup == "M" || empty($carriergroup)): $carriergroup_sql = "COALESCE(f.alid_mkt, f.alid) as alid"; else: $carriergroup_sql = "a.alid as alid"; endif;
+if ($carriergroup == "M" || empty($carriergroup)): $carriergroup_sql = "COALESCE(f.alid_mkt, f.alid) as alid"; $carriergroup_sql2 = "COALESCE(f.alid_mkt, f.alid)"; else: $carriergroup_sql = "a.alid as alid"; $carriergroup_sql2 = "f.alid"; endif;
 
 $limit = $_POST["limit"];
 if(! $limit) {
@@ -114,7 +114,7 @@ while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
 printf ("\n");
 
 // List top 10 airlines
-$sql = "select a.name, $mode as count, $carriergroup_sql from airlines as a, flights as f where f.uid=$uid and COALESCE(f.alid_mkt, f.alid)=a.alid $filter group by alid order by count desc limit $limit";
+$sql = "select a.name, $mode as count, $carriergroup_sql from airlines as a, flights as f where f.uid=$uid and $carriergroup_sql2 = a.alid $filter group by alid order by count desc limit $limit";
 $result = mysql_query($sql, $db);
 $first = true;
 while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
