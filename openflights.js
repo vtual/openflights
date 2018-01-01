@@ -285,7 +285,7 @@ var earthLayer = new OpenLayers.Layer.XYZ(
       $("filter_tripselect").style.display = 'none';
     }
   } else {
-    $("news").style.display = 'inline';
+    // $("news").style.display = 'inline';
     $("quicksearch").style.display = 'inline';
 
     // Nope, set up hinting and autocompletes for editor
