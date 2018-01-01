@@ -835,7 +835,9 @@ function xmlhttpPost(strURL, id, param) {
 	  return;
 	}
 	var alid = $('airline' + indexes[i] + 'id').value;
+  var alid_mkt = $('airline_mkt' + indexes[i] + 'id').value;
 	var airline = $('airline' + indexes[i]).value.trim();
+  var airline_mkt = $('airline_mkt' + indexes[i]).value.trim();
 	if(! alid || alid == 0) {
 	  if(airline == "" || airline == $('airline').hintText) {
 	    alid = "-1"; // UNKNOWN
@@ -849,7 +851,21 @@ function xmlhttpPost(strURL, id, param) {
 	    return;
 	  }
 	}
+  if(! alid_mkt || alid_mkt == 0) {
+    if(airline_mkt == "" || airline_mkt == $('airline_mkt').hintText) {
+      alid_mkt = "-1"; // UNKNOWN
+    } else {
+      mode = getMode();
+      if(confirm(Gettext.strargs(gt.gettext("'%1' not found in %2 database.  Do you want to add it as a new %2 company?"), [airline_mkt, modeoperators[mode], modeoperators[mode]]))) {
+        popNewAirline('airline_mkt' + indexes[i], airline_mkt, mode);
+      } else {
+        $('airline_mkt' + indexes[i]).focus();
+      }
+      return;
+    }
+  }
 	query +='alid' + indexes[i] + '=' + encodeURIComponent(alid) + '&' +
+    'alid_mkt' + indexes[i] + '=' + encodeURIComponent(alid_mkt) + '&' +
 	  'src_date' + indexes[i] + '=' + encodeURIComponent(src_date) + '&' +
 	  'src_apid' + indexes[i] + '=' + encodeURIComponent(src_apid) + '&' +
 	  'dst_apid' + indexes[i] + '=' + encodeURIComponent(dst_apid) + '&';
@@ -1859,7 +1875,7 @@ function editFlight(str, param) {
     openDetailedInput(param);
   }
 
-  // src_iata 0, src_apid 1, dst_iata 2, dst_apid 3, flight code 4, date 5, distance 6, duration 7, seat 8, seat_type 9, class 10, reason 11, fid 12, plane 13, registration 14, alid 15, note 16, trid 17, plid 18, alcode 19, src_time 20, mode 21
+  // src_iata 0, src_apid 1, dst_iata 2, dst_apid 3, flight code 4, date 5, distance 6, duration 7, seat 8, seat_type 9, class 10, reason 11, fid 12, plane 13, registration 14, alid 15, note 16, trid 17, plid 18, alcode 19, src_time 20, mode 21, alid_mkt 22
   var col = str.split("\t");
   var form = document.forms['inputform'];
   form.number.value = col[4];
@@ -1877,6 +1893,7 @@ function editFlight(str, param) {
   selectAirport(col[1], true, true); // sets src_ap, src_apid
   selectAirport(col[3], true, true); // sets dst_ap, dst_apid
   selectAirline(col[15], true); // sets airline, airlineid
+  selectAirline(col[22], true, true); // sets airline_mkt, airlineid_mkt
 
   selectInSelect(inputform.seat_type, col[9]);
   selectInSelect(inputform.trips, col[17]);
@@ -1915,6 +1932,7 @@ function editFlight(str, param) {
 
   form.registration.value = col[14];
   alid = col[15];
+  alid_mkt = col[22];
   if(col[16] != "") {
     $('note').style.color = '#000';
     form.note.value = col[16];
@@ -2804,19 +2822,27 @@ function replicateSelection(source) {
 // Given alid, find it in filter
 // if edit is true, set it in editor, else set in map (filter)
 // return true if found, false if not
-function selectAirline(new_alid, edit) {
+function selectAirline(new_alid, edit, mkt) {
   var al_select = document.forms['filterform'].Airlines;
   for(index = 0; index < al_select.length; index++) {
     if(al_select[index].value.split(";")[0] == new_alid) {
-      if(edit) {
+      if((edit) && !(mkt)) {
 	$(input_al_toggle).value = al_select[index].value.split(";")[1];
 	$(input_al_toggle).style.color = "#000";
 	$(input_al_toggle + 'id').value = new_alid;
+      } else if((edit) && (mkt)) {
+        $('airline_mkt').value = al_select[index].value.split(";")[1];
+        $('airline_mkt').style.color = "#000";
+        $('airline_mktid').value = new_alid;
       } else {
 	al_select.selectedIndex = index;
       }
       return true;
     }
+  }
+  if (mkt) {
+    $('airline_mkt').value = '';
+    $('airline_mktid').value = '';
   }
   return false;
 }
