@@ -1466,7 +1466,7 @@ function listFlights(str, desc, id) {
     table.push("<table width=100% class=\"sortable\" id=\"apttable\" cellpadding=\"0\" cellspacing=\"0\">");
     table.push("<tr><th class=\"unsortable\"></th><th>" + gt.gettext("From") + "</th><th>" + gt.gettext("To") + "</th><th>" + gt.gettext("Nr.") + "</th><th>" + gt.gettext("Date") + "</th><th class=\"sorttable_numeric\">" + gt.gettext("Distance") + "</th><th>" + gt.gettext("Time") + "</th><th>" + gt.gettext("Vehicle") + "</th>");
     if(!route) {
-      table.push("<th>" + gt.gettext("Seat") + "</th><th>" + gt.gettext("Class") + "</th><th>" + gt.gettext("Reason") + "</th><th>" + gt.gettext("Trip") + "</th>");
+      table.push("<th>" + gt.gettext("Class") + "</th><th>" + gt.gettext("Reason") + "</th>");
     }
     table.push("<th>" + gt.gettext("Note") + "</th>");
     if(logged_in) {
@@ -1513,9 +1513,8 @@ function listFlights(str, desc, id) {
       }
       table.push("</td><td>" + date + "</td><td>" + col[6] + "</td><td>" + col[7] + "</td><td>" + plane + "</td>");
       if(!route) {
-	table.push("<td>" + seat +
-		   "</td><td>" + classes[col[10]] + "</td><td>" + reasons[col[11]] +
-		   "</td><td>" + trip + "</td>");
+	table.push("<td>" + classes[col[10]] + "</td><td>" + reasons[col[11]] +
+		   "</td>");
       }
       table.push("<td style='white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;'>" + note + "</td>");
       if(logged_in && !route) {
