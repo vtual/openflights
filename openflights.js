@@ -591,6 +591,7 @@ function xmlhttpPost(strURL, id, param) {
 	    // fallthru
 
 	  case "MAP":
+    case "MAP_HITS":
 	  default:
 	  listFlights(self.xmlHttpReq.responseText, unescape(param), id);
 	    break;
@@ -956,7 +957,7 @@ function xmlhttpPost(strURL, id, param) {
     }
     // ...else fallthru and generate new query
 
-  // URL_MAP, URL_ROUTES, URL_FLIGHTS, URL_STATS, URL_TOP10
+  // URL_MAP, URL_ROUTES, URL_FLIGHTS, URL_HITS, URL_STATS, URL_TOP10
   default:
     $("ajaxstatus").style.display = 'inline';
     var form = document.forms['filterform'];    
@@ -1414,7 +1415,7 @@ function startListFlights() {
 }
 
 function startListHits() {
-  xmlhttpPost(URL_HITS, 0, "MAP");
+  xmlhttpPost(URL_HITS, 0, "MAP_HITS");
 }
 
 function listFlights(str, desc, id) {
@@ -1424,6 +1425,8 @@ function listFlights(str, desc, id) {
   var today = new Date().getTime();
   if(desc == "MAP") {
     desc = gt.gettext("Flights:") + " " + getMapTitle(false);
+  } else if (desc == "MAP_HITS") {
+    desc = gt.gettext("Hits:") + " " + getMapTitle(false);
   }
   
   // IE string concat is painfully slow, so we use an array and join it instead
