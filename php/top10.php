@@ -114,7 +114,7 @@ while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
 printf ("\n");
 
 // List top 10 airlines
-$sql = "select a.name, $mode as count, $carriergroup_sql from airlines as a, flights as f where f.uid=$uid and f.alid=a.alid $filter group by alid order by count desc limit $limit";
+$sql = "select a.name, $mode as count, $carriergroup_sql from airlines as a, flights as f where f.uid=$uid and COALESCE(f.alid_mkt, f.alid)=a.alid $filter group by alid order by count desc limit $limit";
 $result = mysql_query($sql, $db);
 $first = true;
 while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
