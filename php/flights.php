@@ -129,18 +129,18 @@ if($type == "R" || $type == "L") {
 } else {
   if ($_SERVER['QUERY_STRING'] != 'hits') // List of all this user's flights
   {
-    $sql = "SELECT s.iata AS src_iata,s.icao AS src_icao,s.apid AS src_apid,d.iata AS dst_iata,d.icao AS dst_icao,d.apid AS dst_apid,f.code,f.src_date,src_time,distance,DATE_FORMAT(duration, '%H:%i') AS duration,seat,seat_type,class,reason,p.name,registration,fid,l.alid,note,trid,opp,f.plid,l.iata AS al_iata,l.icao AS al_icao,l.name AS al_name,f.mode AS mode FROM airports AS s,airports AS d, airlines AS l,flights AS f LEFT JOIN planes AS p ON f.plid=p.plid WHERE f.uid=" . $uid . " AND f.src_apid=s.apid AND f.dst_apid=d.apid AND f.alid=l.alid" . $filter . $filter2 . $order_by;
-      
-      // ...filtered by airport (optional)
-      if($apid && $apid != 0) {
-        $sql = $sql . " AND (s.apid=" . mysql_real_escape_string($apid) . " OR d.apid=" . mysql_real_escape_string($apid) . ")";
-      }
+    // ...filtered by airport (optional)
+    if($apid && $apid != 0) {
+      $filter_by_apid = " AND (s.apid=" . mysql_real_escape_string($apid) . " OR d.apid=" . mysql_real_escape_string($apid) . ")";
+    }
+
+    $sql = "SELECT s.iata AS src_iata,s.icao AS src_icao,s.apid AS src_apid,d.iata AS dst_iata,d.icao AS dst_icao,d.apid AS dst_apid,f.code,f.src_date,src_time,distance,DATE_FORMAT(duration, '%H:%i') AS duration,seat,seat_type,class,reason,p.name,registration,fid,l.alid,note,trid,opp,f.plid,l.iata AS al_iata,l.icao AS al_icao,l.name AS al_name,f.mode AS mode FROM airports AS s,airports AS d, airlines AS l,flights AS f LEFT JOIN planes AS p ON f.plid=p.plid WHERE f.uid=" . $uid . " AND f.src_apid=s.apid AND f.dst_apid=d.apid AND f.alid=l.alid" . $filter_by_apid . $filter . $filter2 . $order_by;
   }
   else // List of all this user's hits
   {
     // ...filtered by airport (optional)
     if($apid && $apid != 0) {
-      $filter_by_apid . " AND (s.apid=" . mysql_real_escape_string($apid) . " OR d.apid=" . mysql_real_escape_string($apid) . ")";
+      $filter_by_apid = " AND (s.apid=" . mysql_real_escape_string($apid) . " OR d.apid=" . mysql_real_escape_string($apid) . ")";
     }
 
     $sql = "SELECT s.iata AS src_iata,s.icao AS src_icao,s.apid AS src_apid,d.iata AS dst_iata,d.icao AS dst_icao,d.apid AS dst_apid,f.code,f.src_date,src_time,distance,DATE_FORMAT(duration, '%H:%i') AS duration,seat,seat_type,class,reason,p.name,registration,fid,l.alid,note,trid,opp,f.plid,l.iata AS al_iata,l.icao AS al_icao,l.name AS al_name,f.mode AS mode FROM airports AS s,airports AS d, airlines AS l,flights AS f LEFT JOIN planes AS p ON f.plid=p.plid WHERE f.uid=" . $uid . " AND f.src_apid=s.apid AND f.dst_apid=d.apid AND f.alid=l.alid " . $filter_by_apid . $filter . $filter2 . " AND registration IN (SELECT registration FROM (SELECT count(*), registration FROM flights WHERE registration != '' AND uid=" . $uid . " GROUP BY registration HAVING COUNT(*) > 1) AS Q1) ORDER BY registration";
