@@ -83,7 +83,7 @@ if(! $query || $multi) {
 // 3 chars: match on ICAO or name (major airlines only)
 // >3 chars: match on name (any airline)
   
-  $airlines = array("qs", "airline", "airline1", "airline2", "airline3", "airline4");
+  $airlines = array("qs", "airline", "airline1", "airline2", "airline3", "airline4", "airline_mkt");
   foreach($airlines as $al) {
     if($_POST[$al]) {
       $query = mysql_real_escape_string($_POST[$al]);

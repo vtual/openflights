@@ -268,6 +268,7 @@ var earthLayer = new OpenLayers.Layer.XYZ(
   case "query":
   case "airport":
   case "airline":
+  case "airline_mkt":
     query = arguments[1];
   }
 
@@ -290,7 +291,7 @@ var earthLayer = new OpenLayers.Layer.XYZ(
     // Nope, set up hinting and autocompletes for editor
     ac_airport = [ "src_ap", "src_ap1", "src_ap2", "src_ap3", "src_ap4",
 		   "dst_ap", "dst_ap1", "dst_ap2", "dst_ap3", "dst_ap4" ];
-    ac_airline = [ "airline", "airline1", "airline2", "airline3", "airline4" ];
+    ac_airline = [ "airline", "airline1", "airline2", "airline3", "airline4", "airline_mkt" ];
     ac_plane = [ "plane" ];
     for(ac = 0; ac < ac_airport.length; ac++) {
       new Ajax.Autocompleter(ac_airport[ac], ac_airport[ac] + "AC", "php/autocomplete.php",
@@ -625,6 +626,7 @@ function xmlhttpPost(strURL, id, param) {
 	case 'airline2':
 	case 'airline3':
 	case 'airline4':
+  case 'airline_mkt':
 	  var alid = cols[0];
 	  if(alid != "" && alid != 0) {
 	    $(param + 'id').value = cols[0];
@@ -2894,6 +2896,7 @@ function keyPress(e, element) {
       case "airline2":
       case "airline3":
       case "airline4":
+      case "airline_mkt":
 	flightNumberToAirline(element);
 	break;
       }
