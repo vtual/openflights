@@ -1517,12 +1517,7 @@ function listFlights(str, desc, id) {
 		   "</td><td>" + classes[col[10]] + "</td><td>" + reasons[col[11]] +
 		   "</td><td>" + trip + "</td>");
       }
-      // Add an ellipsis to the note if we truncate it.
-      var note = col[16];
-      if(note.length > 15) {
-        note = note.substring(0, 15) + "&hellip;";
-      }
-      table.push("<td>" + note + "</td>");
+      table.push("<td style='white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;'>" + note + "</td>");
       if(logged_in && !route) {
 	      table.push("<td>");
 	      table.push("<a href='#' onclick='JavaScript:preEditFlight(" + fid + "," + r + ");'><img src='/img/icon_edit.png' width=16 height=16 title='" + gt.gettext("Edit this flight") + "'></a>");
