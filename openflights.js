@@ -1787,10 +1787,10 @@ function showTop10(str) {
         var tooManyColumns = noOfColumns - 4;
         // join name back together
         var airportName = col.slice(0, tooManyColumns + 1).join(',');
-        desc = airportName.substring(0,20) + " (" + col[noOfColumns - 3] + ")";
+        desc = airportName.replace(/Airport|Airpark|Air Base|Air Field|International/gi, "") + " (" + col[noOfColumns - 3] + ")";
       }
       else {
-        desc = col[0].substring(0,20) + " (" + col[1] + ")";
+        desc = col[0].replace(/Airport|Airpark|Air Base|Air Field|International/gi, "") + " (" + col[1] + ")";
       }
       table += "<tr><td><a href='#' onclick='JavaScript:selectAirport(" + col[noOfColumns-1] + ");'>" + desc + "</a></td><td style='text-align: right; padding-left: 10px'>" + parseInt(col[noOfColumns-2]) + "</td>";
     }
