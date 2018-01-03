@@ -1515,6 +1515,7 @@ function listFlights(str, desc, id) {
       if(!route) {
 	table.push("<td>" + classes[col[10]] + "</td><td>" + reasons[col[11]] + "</td><td>" + reasons[col[23]] + "</td>");
       }
+      var note = col[16];
       table.push("<td style='white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;'>" + note + "</td>");
       if(logged_in && !route) {
 	      table.push("<td>");
