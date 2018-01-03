@@ -17,6 +17,7 @@ $seat_type = $_POST["type"];
 $class = $_POST["class"];
 $reason = $_POST["reason"];
 $registration = $_POST["registration"];
+$load_factor = $_POST["load_factor"];
 $trid = $_POST["trid"];
 $fid = $_POST["fid"];
 $mode = $_POST["mode"];
@@ -85,12 +86,12 @@ switch ($param) {
     $sql = <<<QUERY
 INSERT INTO flights(
   uid, src_apid, src_date, src_time, dst_apid, duration, distance, registration,
-  code, seat, seat_type, class, reason, note, plid, alid, alid_mkt
+  code, seat, seat_type, class, reason, note, plid, alid, alid_mkt, load_factor
   trid, opp, mode,
   upd_time)
 VALUES(
   ?, ?, ?, ?, ?, ?, ?, ?,
-  ?, ?, ?, ?, ?, ?, ?, ?, ?,
+  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
   ?, ?, ?,
   NOW())
 QUERY;
@@ -122,7 +123,7 @@ QUERY;
       }
       $success = $sth->execute(array(
         $uid, $src_apid, $src_date, $src_time, $dst_apid, $duration, $distance, $registration,
-        $number, $seat, $seat_type, $class, $reason, $note, $plid, $alid, $alid_mkt,
+        $number, $seat, $seat_type, $class, $reason, $note, $plid, $alid, $alid_mkt, $load_factor,
         $trid, $opp, $mode));
       if(!$success) {
         # PDO will print a warning with the error.
@@ -148,7 +149,7 @@ QUERY;
 UPDATE flights
 SET src_apid=?, src_date=?, src_time=?, dst_apid=?, duration=?, distance=?,
     registration=?, code=?, seat=?, seat_type=?, class=?, reason=?,
-    note=?, plid=?, alid=?, alid_mkt=?, trid=?, opp=?, mode=?,
+    note=?, plid=?, alid=?, alid_mkt=?, load_factor=?, trid=?, opp=?, mode=?,
     upd_time=NOW()
 WHERE fid=? AND uid=?
 QUERY;
@@ -156,7 +157,7 @@ QUERY;
     $success = $sth->execute(array(
       $src_apid, $src_date, $src_time, $dst_apid, $duration, $distance,
       $registration, $number, $seat, $seat_type, $class, $reason, $note,
-      $plid, $alid, $alid_mkt, $trid, $opp, $mode,
+      $plid, $alid, $alid_mkt, $load_factor, $trid, $opp, $mode,
 
       $fid, $uid
     ));
