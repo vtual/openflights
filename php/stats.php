@@ -211,6 +211,20 @@ while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
 }
 printf ("\n");
 
+// Aircraft manufacturers
+$sql = "SELECT SUBSTRING_INDEX(name, ' ', 1 ) AS man, COUNT(f.plid) AS planes FROM flights AS f LEFT JOIN planes AS p ON f.plid=p.plid GROUP BY man";
+$result = mysql_query($sql, $db);
+$first = true;
+while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
+  if($first) {
+    $first = false;
+  } else {
+    printf(":");
+  }
+  printf ("%s,%s", $row[0], $row[1]);
+}
+printf ("\n");
+
 // Class (by distance); added at the end so as to not break other potential API users.
 printf ("$class_by_distance_str\n");
 

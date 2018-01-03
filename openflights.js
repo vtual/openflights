@@ -1570,7 +1570,8 @@ function showStats(str) {
     var reasonData = master[4];
     var seatData = master[5];
     var modeData = master[6];
-    var classDataByDistance = master[7];
+    var aircraftManufacturers = master[7];
+    var classDataByDistance = master[8];
 
     bigtable = "<table><td style=\"vertical-align: top\"><img src=\"/img/close.gif\" onclick=\"JavaScript:closePane();\" width=17 height=17></td><td style=\"vertical-align: top\">";
 
@@ -1639,11 +1640,11 @@ function showStats(str) {
       table += "<td><div id=\"chart_seat\"></div></td>";
     table += "</tr>";
 
-    table += "<tr><th>" + gt.gettext("Class by distance") + "</th><th>" + gt.gettext("Mode") + "</th><th><!-- Empty Cell --></th></tr>";
+    table += "<tr><th>" + gt.gettext("Class by distance") + "</th><th>" + gt.gettext("Mode") + "</th><th>" + gt.gettext("Aircraft manufacturers") + "</th></tr>";
     table += "<tr>";
       table += "<td><div id=\"chart_class_distance\"></div></td>";
       table += "<td><div id=\"chart_mode\"></div></td>";
-      table += "<td><!-- Empty --></td>";
+      table += "<td><div id=\"chart_aircraft_manufacturers\"></div></td>";
     table += "</tr>";
     table += "<tr><td>";
     table += "</td><td>";
@@ -1666,6 +1667,7 @@ function showStats(str) {
     // Second row of charts
     googleChart("chart_class_distance", classDataByDistance, classes_short);
     googleChart("chart_mode", modeData, modenames);
+    googleChart("chart_aircraft_manufacturers", aircraftManufacturers);
   }
 }
 
@@ -1703,7 +1705,8 @@ function googleChart(targetdiv, inputdata, labeldata) {
   for (r = 0; r < rows.length; r++) {
     // col is key-value pair separated by a comma
     var col = rows[r].split(",");
-    data.addRow([labeldata[col[0]], parseInt(col[1], 10)]);
+    if (labeldata == null) { label = col[0] } else { label = labeldata[col[0]] };
+    data.addRow([label, parseInt(col[1], 10)]);
   }
 
   // Apply formatter to the "Value" column.
