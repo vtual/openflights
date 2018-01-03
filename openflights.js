@@ -1874,7 +1874,7 @@ function editFlight(str, param) {
     openDetailedInput(param);
   }
 
-  // src_iata 0, src_apid 1, dst_iata 2, dst_apid 3, flight code 4, date 5, distance 6, duration 7, seat 8, seat_type 9, class 10, reason 11, fid 12, plane 13, registration 14, alid 15, note 16, trid 17, plid 18, alcode 19, src_time 20, mode 21, alid_mkt 22
+  // src_iata 0, src_apid 1, dst_iata 2, dst_apid 3, flight code 4, date 5, distance 6, duration 7, seat 8, seat_type 9, class 10, reason 11, fid 12, plane 13, registration 14, alid 15, note 16, trid 17, plid 18, alcode 19, src_time 20, mode 21, alid_mkt 22, load_factor 23
   var col = str.split("\t");
   var form = document.forms['inputform'];
   form.number.value = col[4];
@@ -1930,6 +1930,7 @@ function editFlight(str, param) {
   $('plane_id').value = col[18];
 
   form.registration.value = col[14];
+  $('load_factor').value = col[23];
   alid = col[15];
   alid_mkt = col[22];
   if(col[16] != "") {
