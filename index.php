@@ -199,6 +199,7 @@ require_once("./php/helper.php");
   <td><?php echo _("Plane") ?></td>
   <td><input style="width: 180px" type="text" name="plane" id="plane" tabindex="111" onChange="JavaScript:markAsChanged();" onKeyDown='keyPress(event, "plane")' class="hintTextbox" value="<?php echo _("Enter plane model") ?>"><div id="planeAC"></div><input type="hidden" id="plane_id" name="plane_id" />
       <?php echo _("Reg.") ?> <input type="text" name="registration" size="8" tabindex="112" onChange="JavaScript:markAsChanged();"/>
+      <?php echo _("LF") ?> <input type="text" name="load_factor" size="5" tabindex="113" onChange="JavaScript:markAsChanged();"/>
   </td>
 
 </tr><tr>
