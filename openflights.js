@@ -1513,7 +1513,7 @@ function listFlights(str, desc, id) {
       }
       table.push("</td><td>" + date + "</td><td>" + col[6] + "</td><td>" + col[7] + "</td><td>" + plane + "</td>");
       if(!route) {
-	table.push("<td>" + classes[col[10]] + "</td><td>" + reasons[col[11]] + "</td><td>" + reasons[col[23]] + "</td>");
+	table.push("<td>" + classes[col[10]] + "</td><td>" + reasons[col[11]] + "</td><td>" + col[23] + "</td>");
       }
       var note = col[16];
       table.push("<td style='white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;'>" + note + "</td>");
@@ -1933,7 +1933,7 @@ function editFlight(str, param) {
   $('plane_id').value = col[18];
 
   form.registration.value = col[14];
-  $('load_factor').value = col[23];
+  form.load_factor.value = col[23];
   alid = col[15];
   alid_mkt = col[22];
   if(col[16] != "") {
