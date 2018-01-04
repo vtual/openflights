@@ -2867,7 +2867,8 @@ function showAirlineMap(alid) {
 // Context help
 //
 function help(context) {
-  window.open('/help/' + context + '.html', 'Help', 'width=500,height=400,scrollbars=yes');
+  if (context == "resetpw") { xtsn = ".php"; } else { xtsn = ".html"; }
+  window.open('/help/' + context + xtsn, 'Help', 'width=500,height=400,scrollbars=yes');
 }
 
 //
