@@ -40,7 +40,7 @@ if($name) {
     }
     $_SESSION['locale'] = $myrow["locale"];
   } else {
-    $message = sprintf(_("Login failed. <%s>Create account</a> or <%s>reset password</a>?"), "a href='/html/settings?new=yes'", "a href='#' onclick='JavaScript:help(\"resetpw\")'");
+    $message = sprintf(_("Login failed. <%s>Create account</a> or <%s>reset password</a>?"), "a href='/html/settings.html?new=yes'", "a href='#' onclick='JavaScript:help(\"resetpw\")'");
     $myrow = array("status" => 0, "message" => $message);
   }
   print json_encode($myrow);

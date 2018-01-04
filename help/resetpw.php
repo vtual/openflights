@@ -40,7 +40,7 @@ if(isSet($_GET["challenge"])) {
   $result = mysql_query($sql, $db);
   if ($myrow = mysql_fetch_array($result)) {
     $name = $myrow['name'];
-    $link = "http://openflights.org/help/resetpw?user=" . $name
+    $link = "http://openflights.org/help/resetpw.php?user=" . $name
       . "&challenge=" . $myrow['challenge'];
     $subject = "OpenFlights: Reset password";
     $body = "Somebody has requested a password reset for your OpenFlights.org account '$name'.  To proceed, please click on the link below:
@@ -72,7 +72,7 @@ OpenFlights.org";
       <p>If that doesn't help, enter your <b>e-mail address</b> below, and
       we'll send you a link you can use to reset your password.</p>
 
-      <form name="reset" action="/help/resetpw" enctype="multipart/form-data" method="post">
+      <form name="reset" action="/help/resetpw.php" enctype="multipart/form-data" method="post">
         <input type="text" name="email" align="top" sizze="10" tabindex="1">
         <input type="submit" name="action" value="Reset password" tabindex="2">
       </form>
