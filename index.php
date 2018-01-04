@@ -248,7 +248,7 @@ require_once("./php/helper.php");
 
 </tr><tr>
   <td><?php echo _("Mkt. carrier") ?><a href="#help" onclick='JavaScript:help("airline")'><img src="/img/icon_help.png" title="Help: How do I enter airlines?" height=11 width=10></a></td>
-  <td><input type="text" name="airline_mkt" id="airline_mkt" size="60" tabindex="20" onKeyDown='keyPress(event, "airline_mkt")' class="hintTextbox" value="<?php echo _("(if different from operating carrier)") ?>"/><div id="airline_mktAC"></div>
+  <td><input type="text" name="airline_mkt" id="airline_mkt" size="60" tabindex="21" onKeyDown='keyPress(event, "airline_mkt")' class="hintTextbox" value="<?php echo _("(if different from operating carrier)") ?>"/><div id="airline_mktAC"></div>
       <input type="hidden" name="airline_mktid" id="airline_mktid"/> </td>
   <td><img id="icon_airline" src="/img/icon_airline.png" title="<?php echo _("Airline search") ?>" height=17 width=17 onclick='JavaScript:popNewAirline("airline_mkt")' style="margin-left: 5px"/>
   </td>
@@ -257,7 +257,7 @@ require_once("./php/helper.php");
 
 </tr><tr>
   <td><?php echo _("Note") ?></td>
-  <td colspan=2><input type="text" name="note" id="note" size="60" tabindex="21" class="hintTextbox" value="" onChange="JavaScript:markAsChanged();"></td>
+  <td colspan=2><input type="text" name="note" id="note" size="60" tabindex="22" class="hintTextbox" value="" onChange="JavaScript:markAsChanged();"></td>
   <td colspan=2 align=right>
     <span id="addflightbuttons">
       <input id="b_add" value="<?php echo _("Add") ?>" title="<?php echo _("Save this flight") ?>" type="button" tabindex="120" onclick='JavaScript:submitFlight();'>
