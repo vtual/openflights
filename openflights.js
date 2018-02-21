@@ -34,6 +34,7 @@ var multiinput_rows = 1;
 
 var URL_FLIGHTS = "/php/flights.php";
 var URL_HITS = "/php/flights.php?hits";
+var URL_VISITED = "/php/visited.php";
 var URL_GETCODE = "/php/autocomplete.php";
 var URL_LOGIN = "/php/login.php";
 var URL_LOGOUT = "/php/logout.php";
@@ -579,7 +580,7 @@ function xmlhttpPost(strURL, id, param) {
 	return;
       }
 
-      if(strURL == URL_FLIGHTS || strURL == URL_HITS) {
+      if(strURL == URL_FLIGHTS || strURL == URL_HITS || strURL == URL_VISITED) {
 	switch(param) {
 	  case "COPY":
 	  case "EDIT":
@@ -590,6 +591,10 @@ function xmlhttpPost(strURL, id, param) {
 	    param = lastDesc;
 	    // param contains previously escaped semi-random HTML title
 	    // fallthru
+
+    case "MAP_VISITED":
+      listVisited(self.xmlHttpReq.responseText, unescape(param), id);
+      break;
 
 	  case "MAP":
     case "MAP_HITS":
@@ -968,13 +973,14 @@ function xmlhttpPost(strURL, id, param) {
 
   case URL_FLIGHTS:
   case URL_HITS:
+  case URL_VISITED:
     if(param == "RELOAD") {
       query = lastQuery;
       break;
     }
     // ...else fallthru and generate new query
 
-  // URL_MAP, URL_ROUTES, URL_FLIGHTS, URL_HITS, URL_STATS, URL_TOP10
+  // URL_MAP, URL_ROUTES, URL_FLIGHTS, URL_HITS, URL_VISITED, URL_STATS, URL_TOP10
   default:
     $("ajaxstatus").style.display = 'inline';
     var form = document.forms['filterform'];    
@@ -1001,7 +1007,7 @@ function xmlhttpPost(strURL, id, param) {
     if(strURL == URL_ROUTES) {
       query += '&apid=' + encodeURIComponent(id);
     }
-    if(strURL == URL_FLIGHTS || strURL == URL_HITS) {
+    if(strURL == URL_FLIGHTS || strURL == URL_HITS || strURL == URL_VISITED) {
       switch(param) {
       case "EDIT":
       case "COPY":
@@ -1435,6 +1441,10 @@ function startListHits() {
   xmlhttpPost(URL_HITS, 0, "MAP_HITS");
 }
 
+function startListVisited() {
+  xmlhttpPost(URL_VISITED, 0, "MAP_VISITED");
+}
+
 function listFlights(str, desc, id) {
   openPane("result");
   fidList = new Array();
@@ -1497,7 +1507,7 @@ function listFlights(str, desc, id) {
 	code = col[19] + code;
       }
       if(col[14] != "") {
-	plane += " (" + col[14] + ")";
+	plane += " (<a href='html/airfleets.html?reg=" + col[14] + "' target='_blank'>" + col[14] + "</a>)";
       }
       if(logged_in && trip != "") {
 	trip = "<a href=\"#\" onclick=\"JavaScript:editTrip(" + trip + ");\">" + trip + "</a>";
@@ -1525,6 +1535,50 @@ function listFlights(str, desc, id) {
 	      table.push("</td>");
       }
       table.push("</tr>");
+      fidList.push(fid);
+    }
+    table.push("</table>");
+  }
+  $("result").innerHTML = table.join("");
+  // Refresh sortables code
+  sortables_init();
+}
+
+function listVisited(str, desc, id) {
+  openPane("result");
+  fidList = new Array();
+  var route = ! re_numeric.test(id); // ids starting with R are routes
+  var today = new Date().getTime();
+  desc = gt.gettext("Visited airports:") + " " + getMapTitle(false);
+    
+  // IE string concat is painfully slow, so we use an array and join it instead
+  var table = [];
+  table.push("<img src=\"/img/close.gif\" onclick=\"JavaScript:closePane();\" width=17 height=17> ");
+  if(str == "") {
+    table.push("<i>" + gt.gettext("No flights found at this airport.") + "</i></span></div>");
+  } else {
+    if(desc) {
+      desc = desc.replace("Flights:", gt.gettext("Flights:"));
+      desc = desc.replace("routes", gt.gettext("routes"));
+      desc = desc.replace(/\<br\>/g, " &mdash; ")
+      table.push(desc);
+    }
+    table.push("<table width=30% class=\"sortable\" id=\"apttable\" cellpadding=\"0\" cellspacing=\"0\">");
+    table.push("<tr><th>" + gt.gettext("Airport") + "</th><th>" + gt.gettext("Visited?") + "</th></tr>");
+
+    var rows = str.split("\n");
+    for (r = 0; r < rows.length; r++) {
+      // name 0, iata 1, flights 2
+      var col = rows[r].split("\t");
+      var name = col[0].replace(/Airport|Airpark|Air Base|Air Field|International/gi, "") + " (" + col[1] + ")";
+
+      if(col[2] > 0) {
+        flown = "<b>&#x2713;</b>";
+      } else {
+        flown = "&#x2573;";
+      }
+
+      table.push("<tr><td>" + name + "</td><td>" + flown + "</td></tr>");
       fidList.push(fid);
     }
     table.push("</table>");
