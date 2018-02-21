@@ -21,15 +21,14 @@
 <?php
 include '../php/helper.php';
 
-$db = mysql_connect("localhost", "openflights");
-mysql_select_db("flightdb2",$db);
+$db = mysqli_connect("localhost", "openflights", "flightdb2");
 
 print "<h2>Airline route maps (by IATA code)</h2>";
 
 $sql = "SELECT * FROM airlines WHERE alid IN (SELECT DISTINCT alid
 	    FROM routes) ORDER BY iata";
-$result = mysql_query($sql, $db);
-while($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = $db->query($sql);
+while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   $iata = $row['iata'];
   if(ctype_alnum($iata)) {
     $label = format_airline($row);
@@ -41,8 +40,8 @@ print "<h2>Airport route maps (by IATA code)</h2>";
 
 $sql = "SELECT * FROM airports WHERE apid IN (SELECT DISTINCT src_apid
 	    FROM routes) ORDER BY iata";
-$result = mysql_query($sql, $db);
-while($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = $db->query($sql);
+while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   $iata = $row['iata'];
   if(ctype_alnum($iata)) {
     $label = format_airport($row);
@@ -54,8 +53,8 @@ print "<h2>Airport route maps (by ICAO code)</h2>";
 
 $sql = "SELECT * FROM airports WHERE apid IN (SELECT DISTINCT src_apid
 	    FROM routes) ORDER BY iata";
-$result = mysql_query($sql, $db);
-while($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = $db->query($sql);
+while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   $icao = $row['icao'];
   if(ctype_alnum($icao)) {
     $label = format_airport($row);

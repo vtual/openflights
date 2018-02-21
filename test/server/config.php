@@ -194,8 +194,7 @@ function assert_login($case) {
 function db_connect() {
   global $dbhost, $dbuser, $dbname;
 
-  $db = mysql_connect($dbhost, $dbuser);
-  mysql_select_db($dbname,$db);
+  $db = mysqli_connect($dbhost, $dbuser, $dbname);
   return $db;
 }
 
@@ -203,16 +202,18 @@ function db_connect() {
 function db_uid($db) {
   global $settings;
 
-  $result = mysql_query("SELECT uid FROM users WHERE name='" . $settings["name"] . "'", $db);
-  return mysql_result($result, 0);
+  $result = $db->query("SELECT uid FROM users WHERE name='" . $settings["name"] . "'");
+  $result->data_seek(0);
+  return $result->fetch_field(); 
 }
 
 // Get apid of test airport
 function db_apid($db) {
   global $airport;
 
-  $result = mysql_query("SELECT apid FROM airports WHERE iata='" . $airport["iata"] . "'", $db);
-  return mysql_result($result, 0);
+  $result = $db->query("SELECT apid FROM airports WHERE iata='" . $airport["iata"] . "'");
+  $result->data_seek(0);
+  return $result->fetch_field(); 
 }
 
 function cleanup() {
@@ -220,10 +221,10 @@ function cleanup() {
 
   $db = db_connect();
   $sql = "DELETE FROM flights WHERE uid IN (SELECT uid FROM users WHERE name='" . $settings["name"] . "')";
-  $result = mysql_query($sql, $db);
+  $result = $db->query($sql);
   $sql = "DELETE FROM airports WHERE uid IN (SELECT uid FROM users WHERE name='" . $settings["name"] . "')";
-  $result = mysql_query($sql, $db);
+  $result = $db->query($sql);
   $sql = "DELETE FROM airlines WHERE uid IN (SELECT uid FROM users WHERE name='" . $settings["name"] . "')";
-  $result = mysql_query($sql, $db);
+  $result = $db->query($sql);
 }
 ?>

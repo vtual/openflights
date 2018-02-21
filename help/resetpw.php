@@ -18,14 +18,14 @@ if(isSet($_GET["challenge"])) {
   $user = $_GET["user"];
   $challenge = $_GET["challenge"];
   $sql = "SELECT md5(password) AS challenge FROM users WHERE name='"
-      . mysql_real_escape_string($user) . "'";
-  $result = mysql_query($sql, $db);
-  if ($myrow = mysql_fetch_array($result)) {
+      . mysqli_real_escape_string($db, $user) . "'";
+  $result = $db->query($sql);
+  if ($myrow = mysqli_fetch_array($result)) {
     if($challenge == $myrow['challenge']) {
       $newpw = substr(uniqid(), 0, 8);
       $pwstring = md5($newpw . strtolower($user));
       $sql = "UPDATE users SET password='$pwstring' WHERE name='$user'";
-      mysql_query($sql, $db) or die ('Resetting password for user ' . $name . ' failed: ' . $sql . ', error ' . mysql_error());
+      $db->query($sql) or die ('Resetting password for user ' . $name . ' failed: ' . $sql . ', error ' . mysqli_error($db));
       echo "Your new password is <b>$newpw</b>.  Please log in and change it from Settings.\n\n<INPUT type='button' value='Login' onClick='javascript:window.location=\"/\"'>";
     } else {
       echo "Invalid challenge.";
@@ -36,9 +36,9 @@ if(isSet($_GET["challenge"])) {
 } else if(isSet($_POST["email"])) {
   $email = $_POST["email"];
   $sql = "SELECT name, md5(password) AS challenge FROM users WHERE email='"
-      . mysql_real_escape_string($email) . "'";
-  $result = mysql_query($sql, $db);
-  if ($myrow = mysql_fetch_array($result)) {
+      . mysqli_real_escape_string($db, $email) . "'";
+  $result = $db->query($sql);
+  if ($myrow = mysqli_fetch_array($result)) {
     $name = $myrow['name'];
     $link = "http://openflights.org/help/resetpw.php?user=" . $name
       . "&challenge=" . $myrow['challenge'];

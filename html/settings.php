@@ -79,8 +79,8 @@ if(isSet($_GET["new"])) {
     die(_("Your session has timed out, please log in again."));
   }
   $sql = "SELECT elite, validity, email, name, guestpw, public, count, editor, units, startpane, locale FROM users WHERE uid=" . $uid;
-  $result = mysql_query($sql, $db);
-  if(! $settings = mysql_fetch_array($result, MYSQL_ASSOC)) {
+  $result = $db->query($sql);
+  if(! $settings = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     die(_("Could not load profile data"));
   }
 ?>

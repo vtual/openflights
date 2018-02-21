@@ -7,7 +7,7 @@ if($OF_USE_LOCALES) {
     $locale = $_GET["lang"];
     $_SESSION["locale"] = $locale;
   } else {
-    $locale = $_SESSION["locale"];
+    $locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : NULL;
     if(!$locale or empty($locale)) {
       $locale = "en_GB";
     }
@@ -42,8 +42,8 @@ function locale_pulldown($db, $locale) {
   echo "<select id='locale' onChange='JavaScript:changeLocale()'>\n";
   if($OF_USE_LOCALES) {
     $sql = "SELECT * FROM locales ORDER BY name ASC";
-    $result = mysql_query($sql, $db);
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    $result = $db->query($sql);
+    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
       $selected = ($row["locale"] . ".utf8" == $locale ? "SELECTED" : "");
       printf("<option value='%s' %s>%s (%s)</option>\n", $row["locale"], $selected, $row["name"], substr($row["locale"], 0, 2));
     }

@@ -112,8 +112,8 @@ class ChangeSettingsTest extends WebTestCase {
     // Validate changes
     $db = db_connect();
     $sql = "SELECT * FROM users WHERE name='" . $settings["name"] . "'";
-    $result = mysql_query($sql, $db);
-    $row = mysql_fetch_array($result);
+    $result = $db->query($sql);
+    $row = mysqli_fetch_array($result);
     $this->assertTrue($row["public"] == $params["privacy"], "Public");
     $this->assertTrue($row["email"] == $params["email"], "Email");
     $this->assertTrue($row["editor"] == $params["editor"], "Editor");

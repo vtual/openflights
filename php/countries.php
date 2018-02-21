@@ -4,9 +4,9 @@ include 'db.php';
 
 // List of all countries
 $sql = "SELECT code, name FROM countries ORDER BY name";
-$result = mysql_query($sql, $db);
+$result = $db->query($sql);
 $first = true;
-while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   if($first) {
     $first = false;
   } else {

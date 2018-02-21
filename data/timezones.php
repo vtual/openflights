@@ -17,11 +17,10 @@ include_once('../php/simple_html_dom.php');
 //     <dst>False</dst>
 // </timezone>
 
-$db = mysql_connect("localhost", "openflights");
-mysql_select_db("flightdb2",$db);
+$db = mysqli_connect("localhost", "openflights", "flightdb2");
 $sql = "select * from airports where timezone is null";
-$result = mysql_query($sql, $db) or die ('Database error: ' . $sql . ', error ' . mysql_error());
-while($row = mysql_fetch_assoc($result)) {
+$result = $db->query($sql) or die ('Database error: ' . $sql . ', error ' . mysqli_error($db));
+while($row = mysqli_fetch_assoc($result)) {
   $name = format_airport($row);
   $lon = $row["x"];
   $lat = $row["y"];
@@ -44,9 +43,9 @@ while($row = mysql_fetch_assoc($result)) {
     break;
   }
   $sql = "UPDATE airports SET timezone=$tz, dst='$dstcode' WHERE apid=$apid";
-  $update = mysql_query($sql, $db) or die ('Database error: ' . $sql . ', error ' . mysql_error());
-  if(mysql_affected_rows() != 1) {
-    die ('Database error: ' . $sql . ', error ' . mysql_error());
+  $update = $db->query($sql) or die ('Database error: ' . $sql . ', error ' . mysqli_error($db));
+  if(mysqli_affected_rows($db) != 1) {
+    die ('Database error: ' . $sql . ', error ' . mysqli_error($db));
   }
   print " [OK]\n";
 

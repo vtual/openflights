@@ -63,8 +63,9 @@ function check_date($db, $type, $date) {
     $dateFormat = "%d.%m.%Y";
   }
   $sql = sprintf("SELECT STR_TO_DATE('%s', '%s')", $date, $dateFormat);
-  $result = mysql_query($sql, $db);
-  $db_date = mysql_result($result, 0); 
+  $result = $db->query($sql);
+  $result->data_seek(0);
+  $db_date = $result->fetch_field(); 
   if($db_date == "") {
     $date = null;
     $color = "#faa";
@@ -79,19 +80,19 @@ function check_date($db, $type, $date) {
 function check_airport($db, $code, $name) {
   switch(strlen($code)) {
   case 3:
-    $sql = "select apid,city,country from airports where iata='" . mysql_real_escape_string($code) . "'";
+    $sql = "select apid,city,country from airports where iata='" . mysqli_real_escape_string($db, $code) . "'";
     break;
 
   case 4:
-    $sql = "select apid,city,country from airports where icao='" . mysql_real_escape_string($code) . "'";
+    $sql = "select apid,city,country from airports where icao='" . mysqli_real_escape_string($db, $code) . "'";
     break;
 
   default:
-    $sql = "select apid,city,country from airports where name like '" . mysql_real_escape_string($name) . "%'";
+    $sql = "select apid,city,country from airports where name like '" . mysqli_real_escape_string($db, $name) . "%'";
     break;
   }
-  $result = mysql_query($sql, $db);
-  switch(@mysql_num_rows($result)) {
+  $result = $db->query($sql);
+  switch(@mysqli_num_rows($result)) {
     // No match
   case "0":
     $apid = null;
@@ -100,13 +101,14 @@ function check_airport($db, $code, $name) {
 
     // Solitary match
   case "1":
-    $apid = mysql_result($result, 0);
+    $result->data_seek(0);
+    $apid = $result->fetch_field();
     $color="#fff";
     break;
     
     // Multiple matches
   default:
-    $dbrow = mysql_fetch_array($result, MYSQL_ASSOC);
+    $dbrow = mysqli_fetch_array($result, MYSQLI_ASSOC);
     $apid = $dbrow["apid"];
     $code = $code . "<br><small>" . $dbrow["city"] . "," . $dbrow["country"] . "</small>";
     $color="#ddf";
@@ -138,12 +140,12 @@ function check_airline($db, $number, $airline, $uid, $history) {
 	$part = $airlinepart[0];
       }
       $sql = sprintf("select name,alias,alid from airlines where (name like '%s%%' or alias like '%s%%') and (iata != '' or uid = %s) order by name",
-		     mysql_real_escape_string($part), mysql_real_escape_string($part), $uid);
+		     mysqli_real_escape_string($db, $part), mysqli_real_escape_string($db, $part), $uid);
     }
     
     // validate the airline/code against the DB
-    $result = mysql_query($sql, $db);
-    switch(@mysql_num_rows($result)) {
+    $result = $db->query($sql);
+    switch(@mysqli_num_rows($result)) {
       
       // No match, add as new if we have a name for it, else return error
     case "0":
@@ -158,7 +160,7 @@ function check_airline($db, $number, $airline, $uid, $history) {
       
       // Solitary match
     case "1":
-      $dbrow = mysql_fetch_array($result, MYSQL_ASSOC);
+      $dbrow = mysqli_fetch_array($result, MYSQLI_ASSOC);
       if($airline != "" && (strcasecmp($dbrow['name'], $airline) == 0 || strcasecmp($dbrow['alias'], $airline) == 0)) {
 	// Exact match
 	$color = "#fff";
@@ -181,7 +183,7 @@ function check_airline($db, $number, $airline, $uid, $history) {
     default:
       $color = "#ddf";
       $first = true;
-      while($dbrow = mysql_fetch_array($result, MYSQL_ASSOC)) {
+      while($dbrow = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
 	$isMatch = $airline != "" && ((strcasecmp($dbrow['name'], $airline) == 0) ||
 				      (strcasecmp($dbrow['alias'], $airline) == 0));
 	if($first || $isMatch) {
@@ -210,10 +212,11 @@ function check_plane($db, $plane) {
     return array(null, "#fff");
   }
 
-  $sql = "select plid from planes where name='" . mysql_real_escape_string($plane) . "'";
-  $result = mysql_query($sql, $db);
-  if(@mysql_num_rows($result) == 1) {
-    $plid = mysql_result($result, 0);
+  $sql = "select plid from planes where name='" . mysqli_real_escape_string($db, $plane) . "'";
+  $result = $db->query($sql);
+  if(@mysqli_num_rows($result) == 1) {
+    $result->data_seek(0);
+    $plid = $result->fetch_field(); 
     $color = "#fff";
   } else {
     $plid = "-1"; // new plane
@@ -229,10 +232,12 @@ function check_trip($db, $uid, $trid) {
     return array(null, "#fff");
   }
 
-  $sql = "select uid from trips where trid=" . mysql_real_escape_string($trid);
-  $result = mysql_query($sql, $db);
-  if(@mysql_num_rows($result) == 1) {
-    if($uid == mysql_result($result, 0)) {
+  $sql = "select uid from trips where trid=" . mysqli_real_escape_string($db, $trid);
+  $result = $db->query($sql);
+  if(@mysqli_num_rows($result) == 1) {
+      $result->data_seek(0);
+      $rs2 = $result->fetch_field(); 
+    if($uid == $rs2 {
       $color = "#fff";
     } else {
       $color = "#faa";
@@ -512,9 +517,9 @@ foreach($rows as $row) {
   case _("Import"):
     // Do we need a new plane?
     if($plid == -1) {
-      $sql = "INSERT INTO planes(name) VALUES('" . mysql_real_escape_string($plane) . "')";
-      mysql_query($sql, $db) or die ('0;Adding new plane failed: ' . $sql . ', error ' . mysql_error());
-      $plid = mysql_insert_id();
+      $sql = "INSERT INTO planes(name) VALUES('" . mysqli_real_escape_string($db, $plane) . "')";
+      $db->query($sql) or die ('0;Adding new plane failed: ' . $sql . ', error ' . mysqli_error($db));
+      $plid = mysqli_insert_id($db);
       print "Plane:" . $plane . " ";
     }
 
@@ -522,16 +527,16 @@ foreach($rows as $row) {
     if($alid == -2) {
       // Last-ditch effort to check through non-IATA airlines
       $sql = sprintf("SELECT alid FROM airlines WHERE name='%s' OR alias='%s'",
-		     mysql_real_escape_string($airline), mysql_real_escape_string($airline));
-      $result = mysql_query($sql, $db);
-      if($dbrow = mysql_fetch_array($result, MYSQL_ASSOC)) {
+		     mysqli_real_escape_string($db, $airline), mysqli_real_escape_string($db, $airline));
+      $result = $db->query($sql);
+      if($dbrow = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
 	// Found it
 	$alid = $dbrow["alid"];
       } else {
 	$sql = sprintf("INSERT INTO airlines(name, uid) VALUES('%s', %s)",
-		       mysql_real_escape_string($airline), $uid);
-	mysql_query($sql, $db) or mysql_query($sql, $db) or die ('0;Adding new airline failed: ' . $sql . ', error ' . mysql_error());
-	$alid = mysql_insert_id();
+		       mysqli_real_escape_string($db, $airline), $uid);
+	$db->query($sql) or $db->query($sql) or die ('0;Adding new airline failed: ' . $sql . ', error ' . mysqli_error($db));
+	$alid = mysqli_insert_id($db);
 	print "Airline:" . $airline . " ";
       }
     }
@@ -548,14 +553,14 @@ foreach($rows as $row) {
 
     // And now the flight 
     $sql = sprintf("INSERT INTO flights(uid, src_apid, src_date, src_time, dst_apid, duration, distance, registration, code, seat, seat_type, class, reason, note, plid, alid, trid, upd_time, opp) VALUES (%s, %s, '%s', %s, %s, '%s', %s, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, NOW(), '%s')",
-		   $uid, $src_apid, mysql_real_escape_string($src_date),
+		   $uid, $src_apid, mysqli_real_escape_string($db, $src_date),
 		   ($src_time != "" ? "'" . $src_time . "'" : "NULL"), 
-		   $dst_apid, mysql_real_escape_string($duration),
-		   mysql_real_escape_string($distance), mysql_real_escape_string($reg), mysql_real_escape_string($number),
-		   mysql_real_escape_string($seatnumber), substr($seatpos, 0, 1), $classMap[$seatclass],
-		   $reasonMap[$seatreason], mysql_real_escape_string($comment),
+		   $dst_apid, mysqli_real_escape_string($db, $duration),
+		   mysqli_real_escape_string($db, $distance), mysqli_real_escape_string($db, $reg), mysqli_real_escape_string($db, $number),
+		   mysqli_real_escape_string($db, $seatnumber), substr($seatpos, 0, 1), $classMap[$seatclass],
+		   $reasonMap[$seatreason], mysqli_real_escape_string($db, $comment),
 		   ($plid ? $plid : "NULL"), $alid, ($trid ? $trid : "NULL"), $opp);
-    mysql_query($sql, $db) or die('0;Importing flight failed ' . $sql . ', error ' . mysql_error());
+    $db->query($sql) or die('0;Importing flight failed ' . $sql . ', error ' . mysqli_error($db));
     print $id . " ";
     break;
   }

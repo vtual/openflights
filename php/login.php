@@ -19,13 +19,13 @@ if($challenge && $challenge != $_SESSION["challenge"]) {
 if($name) {
   // CHAP: Use random challenge key in addition to password
   // user_pw == MD5(challenge, db_pw)
-  $sql = "SELECT uid,name,email,editor,elite,units,locale FROM users WHERE name='" . mysql_real_escape_string($name) .
-    "' AND ('" . mysql_real_escape_string($pw) . "' = MD5(CONCAT('" .
-    mysql_real_escape_string($challenge) . "',password)) OR " .
-    " '" . mysql_real_escape_string($legacypw) . "' = MD5(CONCAT('" .
-    mysql_real_escape_string($challenge) . "',password)))";
-  $result = mysql_query($sql, $db);
-  if ($myrow = mysql_fetch_array($result, MYSQL_ASSOC)) {
+  $sql = "SELECT uid,name,email,editor,elite,units,locale FROM users WHERE name='" . $db->real_escape_string($name) .
+    "' AND ('" . $db->real_escape_string($pw) . "' = MD5(CONCAT('" .
+    $db->real_escape_string($challenge) . "',password)) OR " .
+    " '" . $db->real_escape_string($legacypw) . "' = MD5(CONCAT('" .
+    $db->real_escape_string($challenge) . "',password)))";
+  $result = $db->query($sql);
+  if ($myrow = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $uid = $myrow["uid"];
     $_SESSION['uid'] = $uid;
     $_SESSION['name'] = $myrow["name"];

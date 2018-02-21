@@ -69,7 +69,7 @@ switch($export) {
  case "gcmap":
    // Full filter only for user flight searches
    if(! $route) {
-     $filter = getFilterString($_GET);
+     $filter = getFilterString($db, $_GET);
    }
    break;
 
@@ -80,12 +80,12 @@ switch($export) {
  default:
    // Full filter only for user flight searches
    if(! $route) {
-     $filter = getFilterString($_POST);
+     $filter = getFilterString($db, $_POST);
    }
    break;
 }
 if($fid && $fid != "0") {
-  $filter2 = " AND fid= " . mysql_real_escape_string($fid);
+  $filter2 = " AND fid= " . mysqli_real_escape_string($db, $fid);
 }
 
 // And sort order
@@ -131,7 +131,7 @@ if($type == "R" || $type == "L") {
   {
     // ...filtered by airport (optional)
     if($apid && $apid != 0) {
-      $filter_by_apid = " AND (s.apid=" . mysql_real_escape_string($apid) . " OR d.apid=" . mysql_real_escape_string($apid) . ")";
+      $filter_by_apid = " AND (s.apid=" . mysqli_real_escape_string($db, $apid) . " OR d.apid=" . mysqli_real_escape_string($db, $apid) . ")";
     }
 
     $sql = "SELECT s.iata AS src_iata,s.icao AS src_icao,s.apid AS src_apid,d.iata AS dst_iata,d.icao AS dst_icao,d.apid AS dst_apid,f.code,f.src_date,src_time,distance,DATE_FORMAT(duration, '%H:%i') AS duration,seat,seat_type,class,reason,p.name,registration,load_factor,fid,l.alid,note,trid,opp,f.plid,l.iata AS al_iata,l.icao AS al_icao,l.name AS al_name,alid_mkt,l2.iata AS al_iata_mkt,l2.icao AS al_icao_mkt,l2.name AS al_name_mkt,f.mode AS mode FROM airports AS s,airports AS d, airlines AS l,flights AS f LEFT JOIN planes AS p ON f.plid=p.plid LEFT JOIN airlines AS l2 ON f.alid_mkt=l2.alid WHERE f.uid=" . $uid . " AND f.src_apid=s.apid AND f.dst_apid=d.apid AND f.alid=l.alid" . $filter_by_apid . $filter . $filter2 . $order_by;
@@ -140,7 +140,7 @@ if($type == "R" || $type == "L") {
   {
     // ...filtered by airport (optional)
     if($apid && $apid != 0) {
-      $filter_by_apid = " AND (s.apid=" . mysql_real_escape_string($apid) . " OR d.apid=" . mysql_real_escape_string($apid) . ")";
+      $filter_by_apid = " AND (s.apid=" . mysqli_real_escape_string($db, $apid) . " OR d.apid=" . mysqli_real_escape_string($db, $apid) . ")";
     }
 
     $sql = "SELECT s.iata AS src_iata,s.icao AS src_icao,s.apid AS src_apid,d.iata AS dst_iata,d.icao AS dst_icao,d.apid AS dst_apid,f.code,f.src_date,src_time,distance,DATE_FORMAT(duration, '%H:%i') AS duration,seat,seat_type,class,reason,p.name,registration,load_factor,fid,l.alid,note,trid,opp,f.plid,l.iata AS al_iata,l.icao AS al_icao,l.name AS al_name,f.mode AS mode FROM airports AS s,airports AS d, airlines AS l,flights AS f LEFT JOIN planes AS p ON f.plid=p.plid WHERE f.uid=" . $uid . " AND f.src_apid=s.apid AND f.dst_apid=d.apid AND f.alid=l.alid " . $filter_by_apid . $filter . $filter2 . " AND registration IN (SELECT registration FROM (SELECT count(*), registration FROM flights WHERE registration != '' AND uid=" . $uid . " GROUP BY registration HAVING COUNT(*) > 1) AS Q1) ORDER BY registration";
@@ -148,7 +148,7 @@ if($type == "R" || $type == "L") {
 }
 
 // Execute!
-$result = mysql_query($sql, $db) or die ('Error;Query ' . print_r($_GET, true) . ' caused database error ' . $sql . ', ' . mysql_error());
+$result = $db->query($sql) or die ('Error;Query ' . print_r($_GET, true) . ' caused database error ' . $sql . ', ' . mysqli_error($db));
 $first = true;
 
 if($export == "export" || $export == "backup") {
@@ -156,7 +156,7 @@ if($export == "export" || $export == "backup") {
   print "\xEF\xBB\xBFDate,From,To,Flight_Number,Airline,Distance,Duration,Seat,Seat_Type,Class,Reason,Plane,Registration,Trip,Note,From_OID,To_OID,Airline_OID,Plane_OID\r\n";
 }
 $gcmap_city_pairs = '';	// list of city pairs when doing gcmap export.
-while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   $note = $row["note"];
 
   if($route) {

@@ -54,8 +54,8 @@ class CheckPrivateNoPasswordFullUserMap extends WebTestCase {
 
     $db = db_connect();
     $sql = "UPDATE users SET public='N', guestpw='" .  $settings["guestpw"] . "' WHERE name='" . $settings["name"] . "'";
-    $result = mysql_query($sql, $db);
-    $this->assertTrue(mysql_affected_rows() == 1, "Set profile to private");
+    $result = $db->query($sql);
+    $this->assertTrue(mysqli_affected_rows($db) == 1, "Set profile to private");
 
     $params = array("param" => "true",
 		    "guestpw" => "incorrect",

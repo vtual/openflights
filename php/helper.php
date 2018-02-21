@@ -24,7 +24,7 @@ function json_error($msg, $detail='') {
 // Return a quoted string or NULL if empty
 //
 function null_if_empty($str) {
-  return($str == "" ? "NULL" : "'" . mysql_real_escape_string($str) . "'");
+  return($str == "" ? "NULL" : "'" . mysqli_real_escape_string($db, $str) . "'");
 }
 
 //
@@ -130,12 +130,12 @@ function gcDistance($db, $src_apid, $dst_apid) {
       $lon2 = $coord2["x"];
       $lat2 = $coord2["y"];
     } else {
-      $rs = mysql_query($sql, $db);
-      if(mysql_num_rows($rs) != 2) return array(null, null);
-      $row = mysql_fetch_assoc($rs);
+      $rs = $db->query($sql);
+      if(mysqli_num_rows($rs) != 2) return array(null, null);
+      $row = mysqli_fetch_assoc($rs);
       $lon1 = $row["x"];
       $lat1 = $row["y"];
-      $row = mysql_fetch_assoc($rs);
+      $row = mysqli_fetch_assoc($rs);
       $lon2 = $row["x"];
       $lat2 = $row["y"];
     }

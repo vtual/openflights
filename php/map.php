@@ -18,8 +18,8 @@ if(! $trid) {
 $bb_uid = $_COOKIE["bb_userid"];
 if($OF_VBULLETIN_LOGIN && ! empty($bb_uid)) {
   $sql = "SELECT uid,name,email,editor,elite,units,locale FROM users WHERE bb_uid=" . $bb_uid;
-  $result = mysql_query($sql, $db);
-  if ($myrow = mysql_fetch_array($result, MYSQL_ASSOC)) {
+  $result = $db->query($sql);
+  if ($myrow = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $uid = $_SESSION['uid'] = $myrow["uid"];
     $_SESSION['name'] = $myrow["name"];
     $_SESSION['email'] = $myrow["email"];
@@ -61,9 +61,9 @@ $public = "O"; // default to full access
 if($trid && $trid != "0" && $trid != "null") {
   // Verify that we're allowed to access this trip
   // NB: a "trid" filter can mean logged-in *and* filtered, or not logged in!
-  $sql = "SELECT * FROM trips WHERE trid=" . mysql_real_escape_string($trid);
-  $result = mysql_query($sql, $db);
-  if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+  $sql = "SELECT * FROM trips WHERE trid=" . mysqli_real_escape_string($db, $trid);
+  $result = $db->query($sql);
+  if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     if($row["uid"] != $uid and $row["public"] == "N") {
       die('Error;' . _("This trip is not public."));
     } else {
@@ -78,7 +78,7 @@ if($trid && $trid != "0" && $trid != "null") {
 	  $_SESSION["opentrid"] = $trid;
 	}
 	// Increment view counter
-	mysql_query("UPDATE users SET count=count+1 WHERE uid=$uid", $db);
+	$db->query("UPDATE users SET count=count+1 WHERE uid=$uid");
       }
     }
   } else {
@@ -89,9 +89,9 @@ if($trid && $trid != "0" && $trid != "null") {
 if($user && $user != "0") {
   // Verify that we're allowed to view this user's flights
   // if $user is set, we are never logged in
-  $sql = "SELECT uid,public,elite,guestpw,IF('" . $guestpw . "'= guestpw,'Y','N') AS pwmatch FROM users WHERE name='" . mysql_real_escape_string($user) . "'";
-  $result = mysql_query($sql, $db);
-  if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+  $sql = "SELECT uid,public,elite,guestpw,IF('" . $guestpw . "'= guestpw,'Y','N') AS pwmatch FROM users WHERE name='" . mysqli_real_escape_string($db, $user) . "'";
+  $result = $db->query($sql);
+  if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     if($row["public"] == "N" && $row["pwmatch"] == "N") {
       if($row["guestpw"]) {
 	die("Error;" . _("This user's flights are password-protected.") . "<br><br>" .
@@ -110,7 +110,7 @@ if($user && $user != "0") {
 	$_SESSION["opentrid"] = null;
       }
       // Increment view counter
-      mysql_query("UPDATE users SET count=count+1 WHERE uid=$uid", $db);
+      $db->query("UPDATE users SET count=count+1 WHERE uid=$uid");
     }
   } else {
     die('Error;' . _("No such user."));
@@ -119,14 +119,14 @@ if($user && $user != "0") {
 
 
 // Load up all information needed by this user
-$filter = getFilterString($_POST);
+$filter = getFilterString($db, $_POST);
 $map = "";
 
 // Statistics
 // Number of flights, total distance (mi), total duration (minutes), public/open
 $sql = "SELECT COUNT(*) AS count, SUM(distance) AS distance, SUM(TIME_TO_SEC(duration))/60 AS duration FROM flights AS f WHERE mode='F' AND uid=" . $uid . " " . $filter;
-$result = mysql_query($sql, $db) or die ('Error;Database error ' . $sql . ', ' . mysql_error());
-if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = $db->query($sql) or die ('Error;Database error ' . $sql . ', ' . mysqli_error($db));
+if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   if($row["count"] == "0" && $user && $user != "0") {
     die('Error;' . _("This user has no flights."));
   }
@@ -143,9 +143,9 @@ if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
 
 // List of all flights (unique by airport pair)
 $sql = "SELECT DISTINCT s.apid,s.x,s.y,d.apid,d.x,d.y,count(fid),distance AS times,IF(MIN(src_date)>NOW(), 'Y', 'N') AS future,f.mode FROM flights AS f, airports AS s, airports AS d WHERE f.src_apid=s.apid AND f.dst_apid=d.apid AND f.uid=" . $uid . " " . $filter . " GROUP BY s.apid,d.apid";
-$result = mysql_query($sql, $db) or die ('Error;Database error ' . $sql . ', ' . mysql_error());
+$result = $db->query($sql) or die ('Error;Database error ' . $sql . ', ' . mysqli_error($db));
 $first = true;
-while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
+while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
   if($first) {
     $first = false;
   } else {
@@ -157,10 +157,10 @@ $map .= "\n";
 
 // List of all airports
 $sql = "SELECT DISTINCT a.apid,x,y,name,iata,icao,city,country,timezone,dst,count(name) AS visits,IF(MIN(src_date)>NOW(), 'Y', 'N') AS future FROM flights AS f, airports AS a WHERE (f.src_apid=a.apid OR f.dst_apid=a.apid) AND f.uid=" . $uid . $filter . " GROUP BY CONCAT(name,city) ORDER BY visits ASC";
-$result = mysql_query($sql, $db) or die ('Error;Database error ' . $sql . ', ' . mysql_error());
+$result = $db->query($sql) or die ('Error;Database error ' . $sql . ', ' . mysqli_error($db));
 
 $first = true;
-while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   if($first) {
     $first = false;
   } else {

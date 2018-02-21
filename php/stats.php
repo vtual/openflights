@@ -23,9 +23,9 @@ $filter = "";
 
 if($uid == 1 && $trid && $trid != "0") {
   // Verify that we're allowed to access this trip
-  $sql = "SELECT * FROM trips WHERE trid=" . mysql_real_escape_string($trid);
-  $result = mysql_query($sql, $db);
-  if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+  $sql = "SELECT * FROM trips WHERE trid=" . mysqli_real_escape_string($db, $trid);
+  $result = $db->query($sql);
+  if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $public = $row["public"];
     if($row["uid"] != $uid and $public == "N") {
       die('Error;' . _("This trip is not public."));
@@ -38,9 +38,9 @@ if($uid == 1 && $trid && $trid != "0") {
 }
 if($user && $user != "0") {
   // Verify that we're allowed to view this user's flights
-  $sql = "SELECT uid,public FROM users WHERE name='" . mysql_real_escape_string($user) . "'";
-  $result = mysql_query($sql, $db);
-  if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+  $sql = "SELECT uid,public FROM users WHERE name='" . mysqli_real_escape_string($db, $user) . "'";
+  $result = $db->query($sql);
+  if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $public = $row["public"];
     if($public == "N") {
       die('Error;' . _("This user's flights are not public."));
@@ -51,7 +51,7 @@ if($user && $user != "0") {
     die('Error;' . _("User not found."));
   }
 }
-$filter = "f.uid=" . $uid . getFilterString($_POST);
+$filter = "f.uid=" . $uid . getFilterString($db, $_POST);
 $array = array();
 
 // Convert mi to km if units=K
@@ -66,40 +66,40 @@ if($units == "K") {
 
 // unique airports, and countries
 $sql = "SELECT COUNT(DISTINCT a.apid) AS num_airports, COUNT(DISTINCT a.country) AS num_countries FROM flights AS f,airports AS a WHERE (f.src_apid=a.apid OR f.dst_apid=a.apid) AND " . $filter;
-$result = mysql_query($sql, $db);
-if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = $db->query($sql);
+if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   $array += $row;
 }
 
 // hits
 $sql = "SELECT count(hits) as hits_double from (select COUNT(*) as hits from flights f WHERE $filter AND registration != '' GROUP BY registration having COUNT(*) = 2) hits";
-$result = mysql_query($sql, $db);
-if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = $db->query($sql);
+if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   $array += $row;
 }
 
 $sql = "SELECT count(hits) as hits_triple from (select COUNT(*) as hits from flights f WHERE $filter AND registration != '' GROUP BY registration having COUNT(*) = 3) hits";
-$result = mysql_query($sql, $db);
-if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = $db->query($sql);
+if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   $array += $row;
 }
 
 $sql = "SELECT count(hits) as hits_quadruple from (select COUNT(*) as hits from flights f WHERE $filter AND registration != '' GROUP BY registration having COUNT(*) = 4) hits";
-$result = mysql_query($sql, $db);
-if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = $db->query($sql);
+if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   $array += $row;
 }
 
 $sql = "SELECT count(hits) as hits_quintuple_more from (select COUNT(*) as hits from flights f WHERE $filter AND registration != '' GROUP BY registration having COUNT(*) >= 5) hits";
-$result = mysql_query($sql, $db);
-if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = $db->query($sql);
+if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   $array += $row;
 }
 
 // unique airlines, unique planes, total distance (mi), average distance (localized), average duration
 $sql = "SELECT COUNT(DISTINCT alid) AS num_airlines, COUNT(DISTINCT plid) AS num_planes, SUM(distance) AS distance, ROUND(AVG(distance) $multiplier) AS avg_distance, TIME_FORMAT(SEC_TO_TIME(SUM(TIME_TO_SEC(duration))/COUNT(duration)), '%H:%i') AS avg_duration FROM flights AS f WHERE " . $filter;
-$result = mysql_query($sql, $db);
-if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = $db->query($sql);
+if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   $array += $row;
 }
 $array["avg_distance"] .= " " . $unit;
@@ -112,9 +112,9 @@ $sql = sprintf("(SELECT '%s',ROUND(f.distance %s) AS distance,DATE_FORMAT(durati
 	       "(SELECT '%s',ROUND(f.distance %s) AS distance,DATE_FORMAT(duration, '%%H:%%i') AS duration,s.iata,s.icao,s.apid,d.iata,d.icao,d.apid FROM flights AS f,airports AS s,airports AS d WHERE f.src_apid=s.apid AND f.dst_apid=d.apid AND " . $filter . " ORDER BY distance ASC LIMIT 1)",
 	       _("Longest"), $multiplier,
 	       _("Shortest"), $multiplier);
-$result = mysql_query($sql, $db);
+$result = $db->query($sql);
 $first = true;
-while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
+while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
   if($first) {
     $first = false;
   } else {
@@ -135,9 +135,9 @@ $sql = sprintf("(SELECT '%s',iata,icao,apid,x,y FROM airports WHERE y=(SELECT MA
 	       addslashes(_("Northernmost")), addslashes(_("Southernmost")),
 	       addslashes(_("Westernmost")), addslashes(_("Easternmost")));
 
-$result = mysql_query($sql, $db);
+$result = $db->query($sql);
 $first = true;
-while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
+while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
   if($first) {
     $first = false;
   } else {
@@ -156,10 +156,10 @@ if($public != "O") {
 
 // Classes (by number of flights and distance)
 $sql = "SELECT DISTINCT class,COUNT(*) num_flights,SUM(distance) distance FROM flights AS f WHERE " . $filter . " AND class != '' GROUP BY class ORDER BY class";
-$result = mysql_query($sql, $db);
+$result = $db->query($sql);
 $class_by_flight_str = '';
 $class_by_distance_str = '';
-while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
+while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
   if(!empty($class_by_flight_str)) {
     $class_by_flight_str .= ':';
     $class_by_distance_str .= ':';
@@ -171,9 +171,9 @@ printf ("$class_by_flight_str\n");
 
 // Reason
 $sql = "SELECT DISTINCT reason,COUNT(*) FROM flights AS f WHERE " . $filter . " AND reason != '' GROUP BY reason ORDER BY reason";
-$result = mysql_query($sql, $db);
+$result = $db->query($sql);
 $first = true;
-while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
+while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
   if($first) {
     $first = false;
   } else {
@@ -185,9 +185,9 @@ printf ("\n");
 
 // Seat Type
 $sql = "SELECT DISTINCT seat_type,COUNT(*) FROM flights AS f WHERE " . $filter . " AND seat_type != '' GROUP BY seat_type ORDER BY seat_type";
-$result = mysql_query($sql, $db);
+$result = $db->query($sql);
 $first = true;
-while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
+while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
   if($first) {
     $first = false;
   } else {
@@ -199,9 +199,9 @@ printf ("\n");
 
 // Mode
 $sql = "SELECT DISTINCT mode,COUNT(*) FROM flights AS f WHERE " . $filter . " GROUP BY mode ORDER BY mode";
-$result = mysql_query($sql, $db);
+$result = $db->query($sql);
 $first = true;
-while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
+while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
   if($first) {
     $first = false;
   } else {
@@ -213,9 +213,9 @@ printf ("\n");
 
 // Aircraft manufacturers
 $sql = "SELECT SUBSTRING_INDEX(name, ' ', 1 ) AS man, COUNT(f.plid) AS planes FROM flights AS f LEFT JOIN planes AS p ON f.plid=p.plid GROUP BY man";
-$result = mysql_query($sql, $db);
+$result = $db->query($sql);
 $first = true;
-while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
+while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
   if($first) {
     $first = false;
   } else {

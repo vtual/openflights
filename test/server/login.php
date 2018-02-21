@@ -26,15 +26,15 @@ class LegacyLoginTest extends WebTestCase {
 
     $db = db_connect();
     $sql = "INSERT INTO users(name,password) VALUES('$name','$hash')";
-    $result = mysql_query($sql, $db);
-    $this->assertTrue(mysql_affected_rows() == 1, "Legacy user added");
+    $result = $db->query($sql);
+    $this->assertTrue(mysqli_affected_rows($db) == 1, "Legacy user added");
 
     $result = login($this, $name, $password);
     $this->assertEqual($result->status, "1");
 
     $sql = "DELETE FROM users WHERE name='$name'";
-    $result = mysql_query($sql, $db);
-    $this->assertTrue(mysql_affected_rows() == 1, "Legacy user deleted");
+    $result = $db->query($sql);
+    $this->assertTrue(mysqli_affected_rows($db) == 1, "Legacy user deleted");
   }
 }
 

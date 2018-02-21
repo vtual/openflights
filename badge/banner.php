@@ -40,18 +40,18 @@ if(file_exists($cache) && (time() - filemtime($cache) < 3600)) {
 }
 
 // New banner or cache out of date, so regenerate
-$sql = "SELECT uid,public,units FROM users WHERE name='" . mysql_real_escape_string($user) . "'";
-$result = mysql_query($sql, $db);
+$sql = "SELECT uid,public,units FROM users WHERE name='" . mysqli_real_escape_string($db, $user) . "'";
+$result = $db->query($sql);
 if(! $result) rendererror("Database error 1");
-if(mysql_num_rows($result) == 0) rendererror("User $user not found");
-$row = mysql_fetch_array($result, MYSQL_ASSOC);
+if(mysqli_num_rows($result) == 0) rendererror("User $user not found");
+$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
 if($row["public"] == "N") rendererror("User is not public");
 $uid = $row["uid"];
 $units = $row["units"];
 
 $sql = "SELECT COUNT(*) AS count, SUM(distance) AS distance, SUM(TIME_TO_SEC(duration))/60 AS duration FROM flights WHERE uid=$uid";
-$result = mysql_query($sql, $db);
-if($result && $row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = $db->query($sql);
+if($result && $row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   $distance = $row["distance"];
   if($units == "K") {
     $distance *= $KMPERMILE;

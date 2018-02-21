@@ -32,25 +32,25 @@ if($action == "RECORD") {
   }
 
   // Check for duplicates
-  $sql = "SELECT * FROM airlines WHERE mode='" . mysql_real_escape_string($mode) . "' AND (name LIKE '" . mysql_real_escape_string($name) . "' OR alias LIKE '" . mysql_real_escape_string($name) . "')";
+  $sql = "SELECT * FROM airlines WHERE mode='" . mysqli_real_escape_string($db, $mode) . "' AND (name LIKE '" . mysqli_real_escape_string($db, $name) . "' OR alias LIKE '" . mysqli_real_escape_string($db, $name) . "')";
   // Editing an existing entry, so make sure we're not overwriting something else
   if($alid && $alid != "") {
-    $sql .= " AND alid != " . mysql_real_escape_string($alid);
+    $sql .= " AND alid != " . mysqli_real_escape_string($db, $alid);
   }
-  $result = mysql_query($sql, $db) or die('0;Duplicate check failed ' . $sql);
-  if($row = mysql_fetch_array($result, MYSQL_NUM)) {
+  $result = $db->query($sql) or die('0;Duplicate check failed ' . $sql);
+  if($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
     printf("0;" ."A " . $modeOperators[$mode] . " using the name or alias " . $name . " exists already.");
     exit;
   }
 
   if($alias != "") {
-    $sql = "SELECT * FROM airlines WHERE mode='" . mysql_real_escape_string($mode) . "' AND (name LIKE '" . mysql_real_escape_string($alias) . "' OR alias LIKE '" . mysql_real_escape_string($alias) . "')";
+    $sql = "SELECT * FROM airlines WHERE mode='" . mysqli_real_escape_string($db, $mode) . "' AND (name LIKE '" . mysqli_real_escape_string($db, $alias) . "' OR alias LIKE '" . mysqli_real_escape_string($db, $alias) . "')";
     // Editing an existing entry, so make sure we're not overwriting something else
     if($alid && $alid != "") {
-      $sql .= " AND alid != " . mysql_real_escape_string($alid);
+      $sql .= " AND alid != " . mysqli_real_escape_string($db, $alid);
     }
-    $result = mysql_query($sql, $db) or die('0;Duplicate check failed ' . $sql);
-    if($row = mysql_fetch_array($result, MYSQL_NUM)) {
+    $result = $db->query($sql) or die('0;Duplicate check failed ' . $sql);
+    if($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
       printf("0;"."A " . $modeOperators[$mode] . " using the name or alias " . $alias . " exists already.");
       exit;
     }
@@ -58,13 +58,13 @@ if($action == "RECORD") {
 
   // ICAO duplicates are not
   if($icao != "") {
-    $sql = "SELECT * FROM airlines WHERE icao='" . mysql_real_escape_string($icao) . "'";
+    $sql = "SELECT * FROM airlines WHERE icao='" . mysqli_real_escape_string($db, $icao) . "'";
     // Editing an existing entry, so make sure we're not overwriting something else
     if($alid && $alid != "") {
-      $sql .= " AND alid != " . mysql_real_escape_string($alid);
+      $sql .= " AND alid != " . mysqli_real_escape_string($db, $alid);
     }
-    $result = mysql_query($sql, $db) or die('0;Duplicate check failed ' . $sql);
-    if($row = mysql_fetch_array($result, MYSQL_NUM)) {
+    $result = $db->query($sql) or die('0;Duplicate check failed ' . $sql);
+    if($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
       printf("0;An airline using the ICAO code " . $icao . " exists already.");
       exit;
     }
@@ -73,36 +73,36 @@ if($action == "RECORD") {
   if(! $alid || $alid == "") {    
     // Adding new airline
     $sql = sprintf("INSERT INTO airlines(name,alias,country,iata,icao,callsign,mode,active,uid) VALUES('%s', '%s', '%s', '%s', %s, '%s', '%s', '%s', %s)",
-		   mysql_real_escape_string($name), 
-		   mysql_real_escape_string($alias),
-		   mysql_real_escape_string($country),
-		   mysql_real_escape_string($iata),
-		   $icao == "" ? "NULL" : "'" . mysql_real_escape_string($icao) . "'",
-		   mysql_real_escape_string($callsign),
-		   mysql_real_escape_string($mode),
+		   mysqli_real_escape_string($db, $name), 
+		   mysqli_real_escape_string($db, $alias),
+		   mysqli_real_escape_string($db, $country),
+		   mysqli_real_escape_string($db, $iata),
+		   $icao == "" ? "NULL" : "'" . mysqli_real_escape_string($db, $icao) . "'",
+		   mysqli_real_escape_string($db, $callsign),
+		   mysqli_real_escape_string($db, $mode),
 		   $active,
 		   $uid);
   } else {
     // Editing an existing airline
     $sql = sprintf("UPDATE airlines SET name='%s', alias='%s', country='%s', iata='%s', icao=%s, callsign='%s', mode='%s', active='%s' WHERE alid=%s AND (uid=%s OR %s=%s)",
-		   mysql_real_escape_string($name), 
-		   mysql_real_escape_string($alias),
-		   mysql_real_escape_string($country),
-		   mysql_real_escape_string($iata),
-		   $icao == "" ? "NULL" : "'" . mysql_real_escape_string($icao) . "'",
-		   mysql_real_escape_string($callsign),
-		   mysql_real_escape_string($mode),
-		   mysql_real_escape_string($active),
+		   mysqli_real_escape_string($db, $name), 
+		   mysqli_real_escape_string($db, $alias),
+		   mysqli_real_escape_string($db, $country),
+		   mysqli_real_escape_string($db, $iata),
+		   $icao == "" ? "NULL" : "'" . mysqli_real_escape_string($db, $icao) . "'",
+		   mysqli_real_escape_string($db, $callsign),
+		   mysqli_real_escape_string($db, $mode),
+		   mysqli_real_escape_string($db, $active),
 		   $alid,
 		   $uid,
 		   $uid,
 		   $OF_ADMIN_UID);
   }
-  mysql_query($sql, $db) or die('0;Adding new ' . $modeOperators[$mode] . ' failed' . $sql);
+  $db->query($sql) or die('0;Adding new ' . $modeOperators[$mode] . ' failed' . $sql);
   if(! $alid || $alid == "") {
-    printf('1;' . mysql_insert_id() . ';New ' . $modeOperators[$mode] . ' successfully added.');
+    printf('1;' . mysqli_insert_id($db) . ';New ' . $modeOperators[$mode] . ' successfully added.');
   } else {
-    if(mysql_affected_rows() == 1) {
+    if(mysqli_affected_rows($db) == 1) {
       printf('1;' . $apid . ';' . _("Airline successfully edited."));
     } else {
       printf('0;' . _("Editing airline failed:") . ' ' . $sql);
@@ -115,31 +115,31 @@ $sql = "SELECT * FROM airlines WHERE ";
 
 // Build filter
 if($name) {
-  $sql .= " (name LIKE '" . mysql_real_escape_string($name) . "%' OR alias LIKE '" . mysql_real_escape_string($name) . "%') AND";
+  $sql .= " (name LIKE '" . mysqli_real_escape_string($db, $name) . "%' OR alias LIKE '" . mysqli_real_escape_string($db, $name) . "%') AND";
 }
 if($alias) {
-  $sql .= " (name LIKE '" . mysql_real_escape_string($alias) . "%' OR alias LIKE '" . mysql_real_escape_string($alias) . "%') AND";
+  $sql .= " (name LIKE '" . mysqli_real_escape_string($db, $alias) . "%' OR alias LIKE '" . mysqli_real_escape_string($db, $alias) . "%') AND";
 }
 if($callsign) {
-  $sql .= " callsign LIKE '" . mysql_real_escape_string($callsign) . "%' AND";
+  $sql .= " callsign LIKE '" . mysqli_real_escape_string($db, $callsign) . "%' AND";
 }
 
 if($iata) {
-  $sql .= " iata='" . mysql_real_escape_string($iata) . "' AND";
+  $sql .= " iata='" . mysqli_real_escape_string($db, $iata) . "' AND";
 }
 if($icao) {
-  $sql .= " icao='" . mysql_real_escape_string($icao) . "' AND";
+  $sql .= " icao='" . mysqli_real_escape_string($db, $icao) . "' AND";
 }
 if($country != "ALL") {
   if($country) {
-    $sql .= " country='" . mysql_real_escape_string($country) . "' AND";
+    $sql .= " country='" . mysqli_real_escape_string($db, $country) . "' AND";
   }
 }
 if($mode) {
-  $sql .= " mode='" . mysql_real_escape_string($mode) . "' AND";
+  $sql .= " mode='" . mysqli_real_escape_string($db, $mode) . "' AND";
 }
 if($active != "") {
-  $sql .= " active='" . mysql_real_escape_string($active) . "' AND";
+  $sql .= " active='" . mysqli_real_escape_string($db, $active) . "' AND";
 }
 
 if($mode != "F" || $iatafilter == "false") {
@@ -152,14 +152,14 @@ if(! $offset) {
 }
 $sql .= " ORDER BY name";
 
-$result = mysql_query($sql . " LIMIT 10 OFFSET " . $offset, $db) or die ('0;Operation ' . $param . ' failed: ' . $sql);
-$result2 = mysql_query(str_replace("*", "COUNT(*)", $sql), $db);
-if($row = mysql_fetch_array($result2, MYSQL_NUM)) {
+$result = $db->query($sql . " LIMIT 10 OFFSET " . $offset) or die ('0;Operation ' . $param . ' failed: ' . $sql);
+$result2 = $db->query(str_replace("*", "COUNT(*)", $sql));
+if($row = mysqli_fetch_array($result2, MYSQLI_NUM)) {
   $max = $row[0];
 }
 printf("%s;%s;%s", $offset, $max, $sql);
 
-while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   if($row["uid"] || $uid == $OF_ADMIN_UID ) {
     if($row["uid"] == $uid || $uid == $OF_ADMIN_UID) {
       $row["al_uid"] = "own"; // editable

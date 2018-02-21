@@ -67,8 +67,8 @@ $logged_in = $uid and !empty($uid);
                   <option value="">ALL</option>
 <?php
   $sql = "SELECT code, name FROM countries ORDER BY name";
-  $result = mysql_query($sql, $db);
-  while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+  $result = $db->query($sql);
+  while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     printf("<option value='%s'>%s</option>\n", $row["code"], $row["name"]);
   }
 ?>

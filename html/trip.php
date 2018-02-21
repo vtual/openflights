@@ -39,9 +39,9 @@ if(!$uid or empty($uid)) {
 }
 
 if($trid) {
-  $sql = "SELECT * FROM trips WHERE trid=" . mysql_real_escape_string($trid) . " AND uid=" . mysql_real_escape_string($uid);
-  $result = mysql_query($sql, $db);
-  if(! $trip = mysql_fetch_array($result)) {
+  $sql = "SELECT * FROM trips WHERE trid=" . mysqli_real_escape_string($db, $trid) . " AND uid=" . mysqli_real_escape_string($db, $uid);
+  $result = $db->query($sql);
+  if(! $trip = mysqli_fetch_array($result)) {
     die(_("Could not load trip data.") . $sql);
   }
 } else {

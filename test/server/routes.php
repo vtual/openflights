@@ -19,11 +19,11 @@ class RouteMapCoreAirportTest extends WebTestCase {
     // First figure out the correct results
     $db = db_connect();
     $sql = "SELECT DISTINCT src_apid,dst_apid FROM routes WHERE src_ap='" . $route["core_ap_iata"] . "'";
-    $result = mysql_query($sql, $db);
-    $rows = mysql_num_rows($result);
+    $result = $db->query($sql);
+    $rows = mysqli_num_rows($result);
     $this->assertTrue($rows >= 1, "No routes found");
     $route["routes"] = $rows;
-    if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
       $route["core_apid"] = $row["src_apid"];
     }
 
@@ -49,11 +49,11 @@ class RouteMapCoreAirportFilteredTest extends WebTestCase {
     // First figure out the correct results
     $db = db_connect();
     $sql = "SELECT DISTINCT src_apid,dst_apid,alid FROM routes WHERE src_ap='" . $route["core_ap_iata"] . "' AND airline='" . $route["core_ap_filter_iata"] . "'";
-    $result = mysql_query($sql, $db);
-    $rows = mysql_num_rows($result);
+    $result = $db->query($sql);
+    $rows = mysqli_num_rows($result);
     $this->assertTrue($rows >= 1, "No routes found");
     $route["routes"] = $rows;
-    if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
       $route["core_apid"] = $row["src_apid"];
       $route["filter_alid"] = $row["alid"];
     }
@@ -81,8 +81,8 @@ class RouteMapNoRouteAirportTest extends WebTestCase {
     // First figure out the correct apid
     $db = db_connect();
     $sql = "SELECT * FROM airports WHERE iata='" . $route["noroute_ap_iata"] . "'";
-    $result = mysql_query($sql, $db);
-    $this->assertTrue($row = mysql_fetch_array($result, MYSQL_ASSOC), "No-route airport not found");
+    $result = $db->query($sql);
+    $this->assertTrue($row = mysqli_fetch_array($result, MYSQLI_ASSOC), "No-route airport not found");
     $route["noroute_apid"] = $row["apid"];
 
     // Then test
@@ -122,11 +122,11 @@ class RouteMapCoreAirlineTest extends WebTestCase {
     // First figure out the correct results
     $db = db_connect();
     $sql = "SELECT DISTINCT src_apid,dst_apid,alid FROM routes WHERE airline='" . $route["core_al_iata"] . "' AND codeshare=''";
-    $result = mysql_query($sql, $db);
-    $rows = mysql_num_rows($result);
+    $result = $db->query($sql);
+    $rows = mysqli_num_rows($result);
     $this->assertTrue($rows >= 1, "No routes found");
     $route["routes"] = $rows;
-    if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
       $route["core_alid"] = $row["alid"];
     }
 
@@ -152,11 +152,11 @@ class RouteMapCoreAirlineWithCodesharesTest extends WebTestCase {
     // First figure out the correct results
     $db = db_connect();
     $sql = "SELECT DISTINCT src_apid,dst_apid,alid FROM routes WHERE airline='" . $route["core_al_iata"] . "'";
-    $result = mysql_query($sql, $db);
-    $rows = mysql_num_rows($result);
+    $result = $db->query($sql);
+    $rows = mysqli_num_rows($result);
     $this->assertTrue($rows >= 1, "No routes found");
     $route["routes"] = $rows;
-    if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
       $route["core_alid"] = $row["alid"];
     }
 
@@ -183,8 +183,8 @@ class RouteMapNoRouteAirlineTest extends WebTestCase {
     // First figure out the correct apid
     $db = db_connect();
     $sql = "SELECT * FROM airlines WHERE iata='" . $route["noroute_al_iata"] . "'";
-    $result = mysql_query($sql, $db);
-    $this->assertTrue($row = mysql_fetch_array($result, MYSQL_ASSOC), "No-route airline not found");
+    $result = $db->query($sql);
+    $this->assertTrue($row = mysqli_fetch_array($result, MYSQLI_ASSOC), "No-route airline not found");
     $route["noroute_alid"] = $row["alid"];
 
     // Then test

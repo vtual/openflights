@@ -22,14 +22,14 @@ class ExportAirlineToCSVCase extends WebTestCase {
     // First figure out the correct results
     $db = db_connect();
     $sql = "SELECT alid FROM airlines WHERE iata='" . $route["core_al_iata"] . "'";
-    $result = mysql_query($sql, $db) or die($sql . ":" . mysql_error());
-    if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    $result = $db->query($sql) or die($sql . ":" . mysqli_error($db));
+    if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
       $alid = $row["alid"];
     }
 
     $sql = "SELECT COUNT(*) AS count FROM routes WHERE alid=" . $alid;
-    $result = mysql_query($sql, $db) or die($sql . ":" . mysql_error());
-    if($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    $result = $db->query($sql) or die($sql . ":" . mysqli_error($db));
+    if($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
       $route_count = intval($row["count"]);
     }
 

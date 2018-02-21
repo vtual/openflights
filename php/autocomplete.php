@@ -19,7 +19,7 @@ $multi = $_POST["qs"];
 $airports = array("qs", "src_ap", "dst_ap", "src_ap1", "dst_ap1", "src_ap2", "dst_ap2", "src_ap3", "dst_ap3", "src_ap4", "dst_ap4");
 foreach($airports as $ap) {
   if($_POST[$ap]) {
-    $query = mysql_real_escape_string($_POST[$ap]);
+    $query = mysqli_real_escape_string($db, $_POST[$ap]);
     // Limit the number of rows returned in multiinput, where space is at a premium
     if($limit > 1) {
       $idx = substr($ap, -1);
@@ -63,9 +63,9 @@ if($query && ! ($multi && $limit == 1 && strlen($query) < 3)) {
   }
 
   if($limit > 1) print ("<ul class='autocomplete'>");
-  $rs = mysql_query($sql);
-  if(mysql_num_rows($rs) > 0) {
-    while($row = mysql_fetch_assoc($rs)) {
+  $rs = $db->query($sql);
+  if(mysqli_num_rows($rs) > 0) {
+    while($row = mysqli_fetch_assoc($rs)) {
       if($limit > 1) {
 	printf ("<li class='autocomplete' origin='%s' id='%s'>%s</li>\n", $ap, format_apdata($row), format_airport($row));
       } else {
@@ -86,7 +86,7 @@ if(! $query || $multi) {
   $airlines = array("qs", "airline", "airline1", "airline2", "airline3", "airline4", "airline_mkt");
   foreach($airlines as $al) {
     if($_POST[$al]) {
-      $query = mysql_real_escape_string($_POST[$al]);
+      $query = mysqli_real_escape_string($db, $_POST[$al]);
       // Limit(/expand) the number of rows returned in multiinput, where space is at a premium
       if($limit != 1) {
 	$idx = substr($al, -1);
@@ -105,7 +105,7 @@ if(! $query || $multi) {
     }
   }
   if($query) {
-    $mode = mysql_real_escape_string($_POST["mode"]);
+    $mode = mysqli_real_escape_string($db, $_POST["mode"]);
     if(! $mode) $mode = "F";
     if(strlen($query) <= 3 && $mode == 'F') {
       $ext = "iata!='' AND icao!='" . $query . "' AND";
@@ -140,9 +140,9 @@ if(! $query || $multi) {
     }
     
     if($limit > 1 && ! $multi) print ("<ul class='autocomplete'>");
-    $rs = mysql_query($sql) or die($sql);
-    if(mysql_num_rows($rs) > 0) {
-      while($row = mysql_fetch_assoc($rs)) {
+    $rs = $db->query($sql) or die($sql);
+    if(mysqli_num_rows($rs) > 0) {
+      while($row = mysqli_fetch_assoc($rs)) {
 	if($limit > 1) {
 	  printf ("<li class='autocomplete' id='%s'>%s</li>", $row["alid"], format_airline($row));
 	} else {
@@ -154,7 +154,7 @@ if(! $query || $multi) {
   } else if($_POST['plane']) {
 
     // Autocompletion for plane types
-    $query = mysql_real_escape_string($_POST['plane']);
+    $query = mysqli_real_escape_string($db, $_POST['plane']);
     if(strstr($query, '-')) {
       $dashes = " ";
     } else {
@@ -162,20 +162,20 @@ if(! $query || $multi) {
     }
     
     $sql = "SELECT name,plid FROM planes WHERE public='Y' AND name LIKE '%" . $query . "%' ". $dashes . "ORDER BY name LIMIT 6";
-    $rs = mysql_query($sql);
+    $rs = $db->query($sql);
     
     // If no or only one result found, then try again
-    if(mysql_num_rows($rs) == 1 && $dashes != " ") {
+    if(mysqli_num_rows($rs) == 1 && $dashes != " ") {
       $sql = "SELECT name,plid FROM planes WHERE public='Y' AND name LIKE '%" . $query . "%' ORDER BY name LIMIT 6";
-      $rs = mysql_query($sql);
+      $rs = $db->query($sql);
     } else {
-      if(mysql_num_rows($rs) == 0) {
+      if(mysqli_num_rows($rs) == 0) {
 	$sql = "SELECT name,plid FROM planes WHERE name LIKE '%" . $query . "%' ORDER BY name LIMIT 6";
-	$rs = mysql_query($sql);
+	$rs = $db->query($sql);
       }
     }
     print ("<ul class='autocomplete2'>");
-    while($data = mysql_fetch_assoc($rs)) {
+    while($data = mysqli_fetch_assoc($rs)) {
       $item = stripslashes($data['name']);
       if(strlen($item) > 23) {
 	$item = substr($item, 0, 10) . "..." . substr($item, -10, 10);

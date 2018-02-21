@@ -11,8 +11,7 @@ function getlocationcoords($lat, $lon, $width, $height)
    return array("x"=>round($x),"y"=>round($y));
 }
 
-$db = mysql_connect("localhost", "openflights");
-mysql_select_db("flightdb2",$db);
+$db = mysqli_connect("localhost", "openflights", "flightdb2");
 $uid = 3;
 $sql = "SELECT DISTINCT s.x AS sx,s.y AS sy,d.x AS dx,d.y AS dy FROM routes AS r, airports AS s, airports AS d WHERE r.src_apid=s.apid AND r.dst_apid=d.apid GROUP BY s.apid,d.apid";
 
@@ -41,9 +40,9 @@ $scale_y = imagesy($im);
 
 // Now we convert the long/lat coordinates into screen coordinates
 
-$result = mysql_query($sql, $db);
+$result = $db->query($sql);
 $count = 0;
-while($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
   $count++;
   if($count % 100 == 0) fwrite($stderr, "$count ");
 

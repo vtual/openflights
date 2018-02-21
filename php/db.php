@@ -6,12 +6,9 @@ if (isset($dbh)) {
     die('Multiple DB handlers instantiated; aborting.');
 }
 
-$db = mysql_connect($host,$user,$password);
+$db = mysqli_connect($host,$user,$password,$dbname);
 if (!$db) {
-  die("Error;Unable to connect to MySQL at $host as $user: " . mysql_error());
+  die("Error;Unable to connect to MySQL at $host as $user: " . mysqli_error($db));
 }
-if(!mysql_select_db($dbname, $db)) {
-  die("Error;Unable to select database $dbname: " . mysql_error());
-}
-mysql_query("SET NAMES 'utf8'");
+$db->query("SET NAMES 'utf8'");
 ?>

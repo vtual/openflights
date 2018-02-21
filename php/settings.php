@@ -23,9 +23,9 @@ $locale = $_POST["locale"]; // override any value in URL/session
 // Create new user
 switch($type) {
  case "NEW":
-   $sql = "SELECT * FROM users WHERE name='" . mysql_real_escape_string($name) . "'";
-   $result = mysql_query($sql, $db);
-   if (mysql_fetch_array($result)) {
+   $sql = "SELECT * FROM users WHERE name='" . mysqli_real_escape_string($db, $name) . "'";
+   $result = $db->query($sql);
+   if (mysqli_fetch_array($result)) {
      die("0;" . _("Sorry, that name is already taken, please try another."));
    }
    break;
@@ -40,18 +40,18 @@ switch($type) {
 
   if($type == "RESET") {
     $sql = "DELETE FROM flights WHERE uid=" . $uid;
-    $result = mysql_query($sql, $db);
-    printf("10;" . _("Account reset, %s flights deleted."), mysql_affected_rows());
+    $result = $db->query($sql);
+    printf("10;" . _("Account reset, %s flights deleted."), mysqli_affected_rows($db));
     exit;
   }
 
   // EDIT
   if($oldpw && $oldpw != "") {
-    $sql = "SELECT * FROM users WHERE name='" . mysql_real_escape_string($name) .
-      "' AND (password='" . mysql_real_escape_string($oldpw) . "' OR " .
-      "password='" . mysql_real_escape_string($oldlpw) . "')";
-    $result = mysql_query($sql, $db);
-    if(! mysql_fetch_array($result)) {
+    $sql = "SELECT * FROM users WHERE name='" . mysqli_real_escape_string($db, $name) .
+      "' AND (password='" . mysqli_real_escape_string($db, $oldpw) . "' OR " .
+      "password='" . mysqli_real_escape_string($db, $oldlpw) . "')";
+    $result = $db->query($sql);
+    if(! mysqli_fetch_array($result)) {
       die("0;" . _("Sorry, current password is not correct."));
     }
   }
@@ -64,33 +64,33 @@ switch($type) {
 // Note: Password is actually an MD5 hash of pw and username
 if($type == "NEW") {
   $sql = sprintf("INSERT INTO users(name,password,email,public,editor,locale,units) VALUES('%s','%s','%s','%s','%s','%s','%s')",
-		 mysql_real_escape_string($name),
-		 mysql_real_escape_string($pw),
-		 mysql_real_escape_string($email),
-		 mysql_real_escape_string($privacy),
-		 mysql_real_escape_string($editor),
-		 mysql_real_escape_string($locale),
-		 mysql_real_escape_string($units));
+		 mysqli_real_escape_string($db, $name),
+		 mysqli_real_escape_string($db, $pw),
+		 mysqli_real_escape_string($db, $email),
+		 mysqli_real_escape_string($db, $privacy),
+		 mysqli_real_escape_string($db, $editor),
+		 mysqli_real_escape_string($db, $locale),
+		 mysqli_real_escape_string($db, $units));
 } else {
   // Only change password if old password matched and a new one was given
   if($oldpw && $oldpw != "" && $pw && $pw != "") {
-    $pwsql = sprintf("password='%s', ", mysql_real_escape_string($pw));
+    $pwsql = sprintf("password='%s', ", mysqli_real_escape_string($db, $pw));
   } else {
     $pwsql = "";
   }
   if(! $guestpw) $guestpw = "";
   $sql = sprintf("UPDATE users SET %s email='%s', public='%s', editor='%s', guestpw=%s, startpane='%s', locale='%s', units='%s' WHERE uid=%s",
 		 $pwsql,
-		 mysql_real_escape_string($email),
-		 mysql_real_escape_string($privacy),
-		 mysql_real_escape_string($editor),
-		 $guestpw == "" ? "NULL" : "'" . mysql_real_escape_string($guestpw) . "'",
-		 mysql_real_escape_string($startpane),
-		 mysql_real_escape_string($locale),
-		 mysql_real_escape_string($units),
+		 mysqli_real_escape_string($db, $email),
+		 mysqli_real_escape_string($db, $privacy),
+		 mysqli_real_escape_string($db, $editor),
+		 $guestpw == "" ? "NULL" : "'" . mysqli_real_escape_string($db, $guestpw) . "'",
+		 mysqli_real_escape_string($startpane),
+		 mysqli_real_escape_string($db, $locale),
+		 mysqli_real_escape_string($db, $units),
 		 $uid);
 }
-mysql_query($sql, $db) or die ('0;Operation on user ' . $name . ' failed: ' . $sql . ', error ' . mysql_error());
+$db->query($sql) or die ('0;Operation on user ' . $name . ' failed: ' . $sql . ', error ' . mysqli_error($db));
 
 // In all cases change locale and units to user selection
 $_SESSION['locale'] = $locale;
@@ -100,7 +100,7 @@ if($type == "NEW") {
   printf("1;" . _("Successfully signed up, now logging in..."));
 
   // Log in the user
-  $uid = mysql_insert_id();
+  $uid = mysqli_insert_id($db);
   $_SESSION['uid'] = $uid;
   $_SESSION['name'] = $name;
   $_SESSION['editor'] = $editor;

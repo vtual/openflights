@@ -45,8 +45,8 @@ if($action == "RECORD") {
     }
 
     $sql = "SELECT * FROM airports WHERE " . implode(" OR ", $filters);
-    $result = mysql_query($sql, $db);
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    $result = $db->query($sql);
+    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
       if($row['uid'] != $uid || $row['apid'] != $apid) {
         $duplicates[] = print_r($row, true);
       }
@@ -55,50 +55,50 @@ if($action == "RECORD") {
 
   if(! $apid || $apid == "") {    
     $sql = sprintf("INSERT INTO airports(name,city,country,iata,icao,x,y,elevation,timezone,dst,uid) VALUES('%s', '%s', '%s', %s, %s, %s, %s, %s, %s, '%s', %s)",
-		   mysql_real_escape_string($airport), 
-		   mysql_real_escape_string($city),
-		   mysql_real_escape_string($country),
+		   mysqli_real_escape_string($db, $airport), 
+		   mysqli_real_escape_string($db, $city),
+		   mysqli_real_escape_string($db, $country),
 		   null_if_empty($iata),
        null_if_empty($icao),
-		   mysql_real_escape_string($myX),
-		   mysql_real_escape_string($myY),
-		   mysql_real_escape_string($elevation),
-		   mysql_real_escape_string($tz),
-		   mysql_real_escape_string($dst),
+		   mysqli_real_escape_string($db, $myX),
+		   mysqli_real_escape_string($db, $myY),
+		   mysqli_real_escape_string($db, $elevation),
+		   mysqli_real_escape_string($db, $tz),
+		   mysqli_real_escape_string($db, $dst),
 		   $uid);
   } else {
     // Editing an existing airport
     $sql = sprintf("UPDATE airports SET name='%s', city='%s', country='%s', iata=%s, icao=%s, x=%s, y=%s, elevation=%s, timezone=%s, dst='%s' WHERE apid=%s",
-		   mysql_real_escape_string($airport), 
-		   mysql_real_escape_string($city),
-		   mysql_real_escape_string($country),
+		   mysqli_real_escape_string($db, $airport), 
+		   mysqli_real_escape_string($db, $city),
+		   mysqli_real_escape_string($db, $country),
        null_if_empty($iata),
        null_if_empty($icao),
-		   mysql_real_escape_string($myX),
-		   mysql_real_escape_string($myY),
-		   mysql_real_escape_string($elevation),
-		   mysql_real_escape_string($tz),
-		   mysql_real_escape_string($dst),
-		   mysql_real_escape_string($apid));
+		   mysqli_real_escape_string($db, $myX),
+		   mysqli_real_escape_string($db, $myY),
+		   mysqli_real_escape_string($db, $elevation),
+		   mysqli_real_escape_string($db, $tz),
+		   mysqli_real_escape_string($db, $dst),
+		   mysqli_real_escape_string($db, $apid));
   }
   if(empty($duplicates)) {
-    mysql_query($sql, $db) or json_error("Adding new airport failed:", $sql);
+    $db->query($sql) or json_error("Adding new airport failed:", $sql);
     if(! $apid || $apid == "") {
-      json_success(array("apid" => mysql_insert_id(), "message" => "New airport successfully added."));
+      json_success(array("apid" => mysqli_insert_id($db), "message" => "New airport successfully added."));
     } else {
-      if(mysql_affected_rows() == 1) {
+      if(mysqli_affected_rows($db) == 1) {
         json_success(array("apid" => $apid, "message" => "Airport successfully edited."));
       } else {
         json_error("Editing airport failed:", $sql);
       }
     }
   } else {
-    $iata = mysql_real_escape_string($iata);
-    $icao = mysql_real_escape_string($icao);
+    $iata = mysqli_real_escape_string($db, $iata);
+    $icao = mysqli_real_escape_string($db, $icao);
     $name = $_SESSION['name'];
     $data = print_r(implode("\n", $duplicates), TRUE);
     $subject = sprintf("Update airport %s (%s/%s)",
-      mysql_real_escape_string($airport),
+      mysqli_real_escape_string($db, $airport),
       $iata,
       $icao);
     $body = <<<TXT
@@ -149,35 +149,35 @@ TXT;
 if(! $dbname) {
   $dbname = "airports";
 }
-$sql = "SELECT * FROM " . mysql_real_escape_string($dbname) . " WHERE ";
+$sql = "SELECT * FROM " . mysqli_real_escape_string($db, $dbname) . " WHERE ";
 
 if($action == "LOAD") {
   // Single-airport fetch
-  $sql .= " apid=" . mysql_real_escape_string($apid);
+  $sql .= " apid=" . mysqli_real_escape_string($db, $apid);
   $offset = 0;
 
  } else {
   // Real search, build filter
   if($airport) {
-    $sql .= " name LIKE '%" . mysql_real_escape_string($airport) . "%' AND";
+    $sql .= " name LIKE '%" . mysqli_real_escape_string($db, $airport) . "%' AND";
   }
   if($iata) {
-    $sql .= " iata='" . mysql_real_escape_string($iata) . "' AND";
+    $sql .= " iata='" . mysqli_real_escape_string($db, $iata) . "' AND";
   }
   if($icao) {
-    $sql .= " icao='" . mysql_real_escape_string($icao) . "' AND";
+    $sql .= " icao='" . mysqli_real_escape_string($db, $icao) . "' AND";
   }
   if($city) {
-    $sql .= " city LIKE '" . mysql_real_escape_string($city) . "%' AND";
+    $sql .= " city LIKE '" . mysqli_real_escape_string($db, $city) . "%' AND";
   }
   if($country != "ALL") {
     if($dbname == "airports_dafif" || $dbname == "airports_oa") {
       if($code) {
-	$sql .= " code='" . mysql_real_escape_string($code) . "' AND";
+	$sql .= " code='" . mysqli_real_escape_string($db, $code) . "' AND";
       }
     } else {
       if($country) {
-	$sql .= " country='" . mysql_real_escape_string($country) . "' AND";
+	$sql .= " country='" . mysqli_real_escape_string($db, $country) . "' AND";
       }
     }
   }
@@ -195,16 +195,16 @@ if(! $offset) {
 
 // Check result count
 $sql2 = str_replace("*", "COUNT(*)", $sql);
-$result2 = mysql_query($sql2, $db) or json_error('Operation ' . $param . ' failed: ' . $sql2);
-if($row = mysql_fetch_array($result2, MYSQL_NUM)) {
+$result2 = $db->query($sql2) or json_error('Operation ' . $param . ' failed: ' . $sql2);
+if($row = mysqli_fetch_array($result2, MYSQLI_NUM)) {
   $max = $row[0];
 }
 $response = array("status" => 1, "offset" => $offset, "max" => $max);
 
 // Fetch airport data
 $sql .= " ORDER BY name LIMIT 10 OFFSET " . $offset;
-$result = mysql_query($sql, $db) or die (json_encode(array("status" => 0, "message" => 'Operation ' . $param . ' failed: ' . $sql)));
-while ($rows[] = mysql_fetch_assoc($result));
+$result = $db->query($sql) or die (json_encode(array("status" => 0, "message" => 'Operation ' . $param . ' failed: ' . $sql)));
+while ($rows[] = mysqli_fetch_assoc($result));
 array_pop($rows);
 foreach($rows as &$row) {
   if($dbname == "airports_dafif" || $dbname == "airports_oa") {

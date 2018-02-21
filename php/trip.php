@@ -22,46 +22,46 @@ switch($type) {
  case "NEW":
    // Create new trip
    $sql = sprintf("INSERT INTO trips(name,url,public,uid) VALUES('%s','%s','%s', %s)",
-		  mysql_real_escape_string($name),
-		  mysql_real_escape_string($url),
-		  mysql_real_escape_string($privacy),
+		  mysqli_real_escape_string($db, $name),
+		  mysqli_real_escape_string($db, $url),
+		  mysqli_real_escape_string($db, $privacy),
 		  $uid);
    break;
 
  case "EDIT":
    // Edit existing trip
    $sql = sprintf("UPDATE trips SET name='%s', url='%s', public='%s' WHERE uid=%s AND trid=%s",
-		  mysql_real_escape_string($name),
-		  mysql_real_escape_string($url),
-		  mysql_real_escape_string($privacy),
+		  mysqli_real_escape_string($db, $name),
+		  mysqli_real_escape_string($db, $url),
+		  mysqli_real_escape_string($db, $privacy),
 		  $uid,
-		  mysql_real_escape_string($trid));
+		  mysqli_real_escape_string($db, $trid));
    break;
 
    // Assign its flights to null and delete trip
  case "DELETE":
    $sql = sprintf("UPDATE flights SET trid=NULL WHERE trid=%s AND uid=%s",
-		  mysql_real_escape_string($trid),
-		  mysql_real_escape_string($uid));
-   mysql_query($sql, $db) or die ('0;Operation on trip ' . $name . ' failed: ' . $sql . ', error ' . mysql_error());
+		  mysqli_real_escape_string($db, $trid),
+		  mysqli_real_escape_string($db, $uid));
+   $db->query($sql) or die ('0;Operation on trip ' . $name . ' failed: ' . $sql . ', error ' . mysqli_error($db));
 
    $sql = sprintf("DELETE FROM trips WHERE trid=%s AND uid=%s",
-		  mysql_real_escape_string($trid),
-		  mysql_real_escape_string($uid));
+		  mysqli_real_escape_string($db, $trid),
+		  mysqli_real_escape_string($db, $uid));
    break;
 
  default:
    die ('0;Unknown operation ' . $type);
 }
 
-mysql_query($sql, $db) or die ('0;Operation on trip ' . $name . ' failed: ' . $sql . ', error ' . mysql_error());
-if(mysql_affected_rows() != 1) {
+$db->query($sql) or die ('0;Operation on trip ' . $name . ' failed: ' . $sql . ', error ' . mysqli_error($db));
+if(mysqli_affected_rows($db) != 1) {
   die("0;No matching trip found");
 }
   
 switch($type) {
  case "NEW":
-   $trid = mysql_insert_id();
+   $trid = mysqli_insert_id($db);
    printf("1;%s;" . _("Trip successfully created"), $trid);
    break;
 
