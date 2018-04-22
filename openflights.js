@@ -940,6 +940,7 @@ function xmlhttpPost(strURL, id, param) {
       'class=' + encodeURIComponent(myClass) + '&' +
       'reason=' + encodeURIComponent(reason) + '&' +
       'registration=' + encodeURIComponent(registration) + '&' +
+      'load_factor=' + encodeURIComponent(load_factor) + '&' +
       'note=' + encodeURIComponent(note) + '&' +
       'plane=' + encodeURIComponent(plane) + '&' +
       'trid=' + encodeURIComponent(trid) + '&' +

@@ -86,7 +86,7 @@ switch ($param) {
     $sql = <<<QUERY
 INSERT INTO flights(
   uid, src_apid, src_date, src_time, dst_apid, duration, distance, registration,
-  code, seat, seat_type, class, reason, note, plid, alid, alid_mkt, load_factor
+  code, seat, seat_type, class, reason, note, plid, alid, alid_mkt, load_factor,
   trid, opp, mode,
   upd_time)
 VALUES(
@@ -125,7 +125,7 @@ QUERY;
         $uid, $src_apid, $src_date, $src_time, $dst_apid, $duration, $distance, $registration,
         $number, $seat, $seat_type, $class, $reason, $note, $plid, $alid, $alid_mkt, $load_factor,
         $trid, $opp, $mode));
-      if(!$success) {
+        if(!$success) {
         # PDO will print a warning with the error.
         error_log("Could not insert flight for user $uid.");
         die('0;Database error when executing query.');
